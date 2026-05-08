@@ -1,0 +1,25 @@
+machine:
+  install:
+    image: "factory.talos.dev/metal-installer-secureboot/8eb7f04739955fbee3f124a21332d41238efc3e776fa00694ba8a6b4aef8adbf:${talos_version}"
+    disk: "${ install_disk }"
+    wipe: true
+  network:
+    interfaces:
+      - interface: eth0
+        dhcp: true
+  time:
+    servers: ["time.cloudflare.com","pool.ntp.org"]
+  kernel:
+    modules:
+%{ if enable_i915 ~}
+      - name: i915
+        parameters:
+          - enable_guc=3
+          - force_probe=*
+%{ endif ~}
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true

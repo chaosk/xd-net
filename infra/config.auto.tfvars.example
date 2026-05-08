@@ -1,0 +1,27 @@
+## Local, non-committed config for `infra/`
+## Copy to `config.auto.tfvars` and edit.
+##
+## NOTE: `config.auto.tfvars` is automatically loaded by Terraform.
+## Keep real credentials out of git.
+
+# Proxmox
+pm_api_url  = "https://proxmox.example.com:8006/api2/json"
+pm_user     = "root@pam"
+pm_password = "change-me"
+pm_node     = "pve"
+
+# Optional (defaults are fine for most cases)
+# pm_tls_insecure = true
+# vm_bridge       = "vmbr1"
+# vm_storage      = "local-lvm"
+
+# Cluster identity / DNS
+# cluster_name   = "xd-net"
+# domain_suffix  = "k8s.net.ecksd.ee"
+# cluster_endpoint = "https://k8s.net.ecksd.ee:6443"
+
+# Talos pins (normally leave defaults from `infra/variables.tf`)
+# talos_version  = "v1.13.0"
+# talos_iso_url  = "https://factory.talos.dev/image/<schematic>/<version>/metal-amd64-secureboot.iso"
+# talos_iso_name = "talos-<version>-metal-amd64-secureboot.iso"
+

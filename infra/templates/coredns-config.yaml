@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  custom.override: |
+    # Custom DNS configuration for ${cluster_name}
+    ${cluster_name}.local:53 {
+        hosts {
+%{ for node in nodes ~}
+            ${node.ip} ${node.name}.${cluster_name}.local
+%{ endfor ~}
+            fallthrough
+        }
+    }
+
+    # Forward external DNS queries
+    .:53 {
+        forward . ${join(" ", dns_servers)}
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
