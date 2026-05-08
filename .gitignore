@@ -1,0 +1,14 @@
+.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Local tfvars (use *.example templates)
+**/config.auto.tfvars
+
+# Infra: generated Talos/kubeconfig and stray copies
+infra/_out/
+infra/kubeconfig
+infra/talosconfig

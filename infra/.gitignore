@@ -1,0 +1,7 @@
+config.auto.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*
+_out/
+kubeconfig
+talosconfig
