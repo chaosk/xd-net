@@ -1,0 +1,4 @@
+config.auto.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*

@@ -1,0 +1,8 @@
+## Copy to config.auto.tfvars (gitignored) if you need overrides.
+
+# kubeconfig_path = "../infra/_out/kubeconfig"
+
+# Pin releases to match your cluster / chart choices:
+# gateway_api_release   = "v1.4.1"
+# cert_manager_release  = "v1.17.1"
+# argocd_release        = "v2.14.0"
