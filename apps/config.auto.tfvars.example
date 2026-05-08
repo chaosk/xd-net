@@ -1,0 +1,26 @@
+## Local, non-committed config
+## Copy to `config.auto.tfvars` and edit.
+
+# Kubernetes access
+# kubeconfig_path = "../infra/_out/kubeconfig"
+
+# ACME / Let's Encrypt
+acme_email = "you@example.com"
+
+# Optional: ACME issuer + server
+# acme_cluster_issuer_name = "letsencrypt-prod"
+# acme_server = "https://acme-v02.api.letsencrypt.org/directory"
+
+# For DNS-01 with Vercel (recommended if cluster is not public)
+vercel_api_token = "vercel_xxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Synology NAS credentials (sensitive)
+synology_host     = "nas.lan"
+synology_username = "admin"
+synology_password = "change-me"
+# synology_port  = 5001
+# synology_https = true
+
+# ArgoCD host override (optional)
+# argocd_host = "argocd.net.ecksd.ee"
+
