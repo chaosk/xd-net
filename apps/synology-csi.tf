@@ -35,14 +35,21 @@ resource "helm_release" "synology_csi" {
   name             = "synology-csi"
   repository       = "https://zebernst.github.io/synology-csi-talos"
   chart            = "synology-csi"
+  version          = "0.9.4"
   namespace        = kubernetes_namespace_v1.synology_csi.metadata[0].name
   create_namespace = false
 
+  # Helm index may lag behind GitHub main; empty tag in chart = Chart.AppVersion.
+  # Override driver: https://github.com/SynologyOpenSource/synology-csi/releases
   set = [
     {
       name  = "clientInfoSecret.name"
       value = kubernetes_secret_v1.synology_creds.metadata[0].name
-    }
+    },
+    {
+      name  = "images.plugin.tag"
+      value = "v1.2.0"
+    },
   ]
 
   depends_on = [kubernetes_secret_v1.synology_creds]

@@ -25,6 +25,19 @@ resource "helm_release" "cert_manager_webhook_vercel" {
     }
   ]
 
+  values = [
+    yamlencode({
+      podDnsConfig = {
+        options = [
+          {
+            name  = "ndots"
+            value = "1"
+          }
+        ]
+      }
+    })
+  ]
+
   depends_on = [helm_release.certmanager]
 }
 

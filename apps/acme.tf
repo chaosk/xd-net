@@ -1,4 +1,6 @@
 resource "kubernetes_manifest" "acme_cluster_issuer" {
+  computed_fields = ["spec.acme.solvers"]
+
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
@@ -18,12 +20,17 @@ resource "kubernetes_manifest" "acme_cluster_issuer" {
               webhook = {
                 groupName  = "acme.rhythmbhiwani.in"
                 solverName = "vercel"
-                config = {
-                  apiTokenSecretRef = {
-                    name = kubernetes_secret_v1.vercel_api_token.metadata[0].name
-                    key  = "token"
-                  }
-                }
+                config = merge(
+                  {
+                    # cert-manager-webhook-vercel expects apiKeySecretRef.
+                    apiKeySecretRef = {
+                      name = kubernetes_secret_v1.vercel_api_token.metadata[0].name
+                      key  = "token"
+                    }
+                  },
+                  var.vercel_team_id != null ? { teamId = var.vercel_team_id } : {},
+                  var.vercel_team_slug != null ? { teamSlug = var.vercel_team_slug } : {},
+                )
               }
             }
           }
@@ -34,4 +41,3 @@ resource "kubernetes_manifest" "acme_cluster_issuer" {
 
   depends_on = [helm_release.certmanager, helm_release.cert_manager_webhook_vercel]
 }
-

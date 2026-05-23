@@ -10,13 +10,14 @@ resource "kubernetes_manifest" "synology_storageclass" {
     }
     provisioner = "csi.san.synology.com"
     parameters = {
-      fsType   = "ext4"
-      protocol = "iscsi"
+      "csi.storage.k8s.io/fstype" = "ext4"
+      protocol                    = "iscsi"
+      location                    = "/volume3"
     }
-    reclaimPolicy     = "Delete"
-    volumeBindingMode = "Immediate"
+    reclaimPolicy        = "Delete"
+    volumeBindingMode    = "Immediate"
+    allowVolumeExpansion = true
   }
 
   depends_on = [helm_release.synology_csi]
 }
-
