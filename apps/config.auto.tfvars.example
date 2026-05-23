@@ -4,12 +4,26 @@
 # Kubernetes access
 # kubeconfig_path = "../infra/_out/kubeconfig"
 
+# GitOps (private repo: set git_repo_url to SSH and paste deploy key)
+# git_repo_url = "git@github.com:YOUR_USER/xd-net-apps.git"
+# git_repo_ssh_private_key = <<-EOT
+# -----BEGIN OPENSSH PRIVATE KEY-----
+# ...
+# -----END OPENSSH PRIVATE KEY-----
+# EOT
+
 # ACME / Let's Encrypt
 acme_email = "you@example.com"
 
 # Optional: ACME issuer + server
 # acme_cluster_issuer_name = "letsencrypt-prod"
 # acme_server = "https://acme-v02.api.letsencrypt.org/directory"
+
+# Optional: DNS-01 self-check tuning (Helm extraArgs). There is no Traefik disablePropagationCheck equivalent:
+# cert-manager always runs a propagation self-check; you cannot turn it off.
+# Traefik resolvers + disablePropagationCheck  →  public recursive NS + nameservers-only (same ISP workaround):
+# acme_dns01_recursive_nameservers       = ["1.1.1.1:53", "8.8.8.8:53"]
+# acme_dns01_recursive_nameservers_only = true
 
 # For DNS-01 with Vercel (recommended if cluster is not public)
 vercel_api_token = "vercel_xxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -21,6 +35,68 @@ synology_password = "change-me"
 # synology_port  = 5001
 # synology_https = true
 
+# pangolin-operator (OCI edge must expose Integration API — pangolin-edge terraform output integration_api_url)
+# pangolin_operator_enabled  = true
+# pangolin_operator_api_url  = "https://pangolin-api.ecksd.ee"
+# pangolin_operator_endpoint = "https://pangolin.ecksd.ee"
+# pangolin_operator_org_id   = "<org-id>"
+# pangolin_operator_api_key  = "<integration-api-key>"
+# pangolin_newtsite_name     = "xd-net"
+# pangolin_newtsite_display_name = "xd-net k8s cluster"
+
 # ArgoCD host override (optional)
 # argocd_host = "argocd.net.ecksd.ee"
 
+# SOPS (platform-secrets): Age keys file on disk — never commit it (see apps/.gitignore). Paths are relative to cwd when you run terraform apply (use apps/ as cwd).
+# argocd_sops_age_key_file = "./sops.age.keys.txt"
+# argocd_sops_age_secret_name = "argo-sops-age"
+# CMP sops sidecar (default alpine + one-time sops download to /tmp; needs github.com egress). Keys only on cmp-sops.
+# argocd_cmp_sops_sidecar_image = "docker.io/library/alpine:3.20"
+# If argocd already existed without Terraform managing the namespace, import once before apply:
+# terraform import 'module.argocd.kubernetes_namespace_v1.argocd' argocd
+
+# Dex → Authentik (set issuer, client_id, client_secret together). Enables dex.config and dex.authentik.clientSecret; keeps bundled Dex on.
+# In Authentik, add redirect URIs (strict): https://<argocd_host>/api/dex/callback and https://localhost:8085/auth/callback
+# argocd_oidc_issuer          = "https://authentik.net.example/application/o/my-argocd/"
+# argocd_oidc_client_id       = "<client id>"
+# argocd_oidc_client_secret   = "<client secret>"
+# argocd_oidc_display_name    = "Authentik"
+# argocd_rbac_policy_csv      = <<-EOT
+# g, ArgoCD Admins, role:admin
+# g, ArgoCD Viewers, role:readonly
+# EOT
+
+# Envoy Gateway LoadBalancer (Cilium LB IPAM + L2): pick unused LAN IPs for the shared Gateway Service
+# gateway_class_name = "eg"
+# gateway_http_to_https_redirect = true
+# gateway_http_redirect_status_code = 301
+# envoy_gateway_version = "v1.5.0"
+# envoy_gateway_controller_memory_request = "256Mi"
+# envoy_gateway_controller_memory_limit   = "512Mi"
+# envoy_proxy_memory_request = "128Mi"
+# envoy_proxy_memory_limit   = "1Gi"
+# envoy_proxy_cpu_request    = "100m"
+# envoy_proxy_cpu_limit      = "2000m"
+# Cluster required for Cilium L2 leader on a different node than the Envoy pod (default).
+# envoy_proxy_external_traffic_policy = "Cluster"
+# cilium_l2_loadbalancer_ip_pool = { start = "192.168.1.240", stop = "192.168.1.250" }
+# cilium_l2_announcement_interfaces = ["eth0"]
+# Cilium resource caps (defaults in variables.tf — apply so agents are not BestEffort)
+# cilium_agent_memory_request = "256Mi"
+# cilium_agent_memory_limit   = "1Gi"
+# cilium_agent_cpu_request    = "100m"
+# cilium_agent_cpu_limit      = "2000m"
+
+# Local NVMe / fast disk (Rancher local-path-provisioner). Synology stays default StorageClass.
+# With Talos UserVolumeConfig (infra/patches/local-path-user-volume.yaml.tmpl), default is /var/mnt/local-path-data.
+# local_path_default_path = "/var/mnt/local-path-data"
+# local_path_per_node_paths = { "my-worker" = ["/var/local/nvme/local-path"] }
+# local_path_storage_class_name = "local-path"
+
+# Intel GPU plugin (GpuDevicePlugin sharedDevNum — default 4 in variables.tf; override here)
+# intel_gpu_plugin_shared_dev_num = 8
+
+# CloudNativePG (PostgreSQL operator): namespace / chart pin / extra Helm values
+# cnpg_operator_namespace        = "cnpg-system"
+# cnpg_operator_chart_version    = "0.28.1"
+# cnpg_operator_extra_values     = { config = { clusterWide = true } }
