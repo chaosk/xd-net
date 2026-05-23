@@ -1,17 +1,23 @@
 machine:
   install:
-    image: "factory.talos.dev/metal-installer-secureboot/8eb7f04739955fbee3f124a21332d41238efc3e776fa00694ba8a6b4aef8adbf:${talos_version}"
+    image: "factory.talos.dev/metal-installer-secureboot/79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167:${talos_version}"
     disk: "${ install_disk }"
     wipe: true
   network:
     interfaces:
       - interface: eth0
         dhcp: true
+      # Talos HostDNS (169.254.116.108) on lo with routable scope — required for
+      # forwardKubeDNSToHost when Cilium uses bpf.masquerade / eBPF host routing.
+      # https://github.com/siderolabs/talos/pull/9200#issuecomment-2805269653
+      - interface: lo
+        addresses:
+          - 169.254.116.108/32
   time:
     servers: ["time.cloudflare.com","pool.ntp.org"]
+%{ if enable_i915 ~}
   kernel:
     modules:
-%{ if enable_i915 ~}
       - name: i915
         parameters:
           - enable_guc=3

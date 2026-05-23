@@ -12,8 +12,13 @@ pm_node     = "pve"
 
 # Optional (defaults are fine for most cases)
 # pm_tls_insecure = true
+# pm_timeout = 3600
 # vm_bridge       = "vmbr1"
 # vm_storage      = "local-lvm"
+# vm_data_storage = "nvme_pool"
+# vm_worker_data_disk_gb = 500   # xd-w-* only; control planes have no data disk
+# vm_control_plane_memory_mb = 4096   # xd-c-* (4 GiB)
+# vm_worker_memory_mb        = 12288  # xd-w-* (12 GiB)
 
 # Cluster identity / DNS
 # cluster_name   = "xd-net"

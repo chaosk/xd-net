@@ -6,7 +6,7 @@ locals {
   ]
 
   workers = [
-    { id = 4, vmid = 904, name = "xd-w-1", fqdn = "xd-w-1.${var.domain_suffix}", macaddr = "bc:24:11:45:98:04", gpu = false },
+    { id = 4, vmid = 904, name = "xd-w-1", fqdn = "xd-w-1.${var.domain_suffix}", macaddr = "bc:24:11:45:98:04", gpu = true },
     { id = 5, vmid = 905, name = "xd-w-2", fqdn = "xd-w-2.${var.domain_suffix}", macaddr = "bc:24:11:45:98:05", gpu = false },
     { id = 6, vmid = 906, name = "xd-w-3", fqdn = "xd-w-3.${var.domain_suffix}", macaddr = "bc:24:11:45:98:06", gpu = false },
   ]

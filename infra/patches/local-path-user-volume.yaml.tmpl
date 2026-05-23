@@ -1,0 +1,24 @@
+# UserVolumeConfig: extra disk for Rancher local-path-provisioner (Talos volume manager).
+# Mounts automatically at /var/mnt/<name> → /var/mnt/local-path-data (see UserVolumeConfig docs).
+#
+# Disk selector: non-system data disk on worker VMs (Proxmox scsi1 from nvme_pool).
+# Sizes are derived from vm_worker_data_disk_gb in Terraform — tune if you change disk size.
+#
+# `maxSize` must be **below** raw disk size: GPT/alignment needs a few GiB margin.
+#
+# Manual apply:
+#   export TALOSCONFIG=./_out/talosconfig
+#   talosctl patch --nodes <ip> --patch @./patches/local-path-user-volume.yaml
+#
+# Ref: https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/storage-and-disk-management/disk-management
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: local-path-data
+volumeType: partition
+provisioning:
+  diskSelector:
+    match: '!system_disk && disk.size >= ${data_disk_min_gib}u * GiB && disk.size <= ${data_disk_max_gib}u * GiB'
+  grow: true
+  maxSize: ${max_size}
+filesystem:
+  type: ext4

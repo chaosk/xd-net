@@ -21,6 +21,7 @@ provider "proxmox" {
   pm_user         = var.pm_user
   pm_password     = var.pm_password
   pm_tls_insecure = var.pm_tls_insecure
+  pm_timeout      = var.pm_timeout
 
   # Drop when provider's updated for PVE 9.0.3
   pm_minimum_permission_check = false
