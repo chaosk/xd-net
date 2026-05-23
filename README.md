@@ -5,8 +5,9 @@ ArgoCD uses an **ApplicationSet** to auto-load apps from a path in your Git repo
 
 ## Layout
 - `infra/` → Proxmox + Talos bootstrap
-- `app-manifests/` → Cluster-wide CRDs (Gateway API, cert-manager, Argo CD) applied before `apps/`
+- `app-manifests/` → Cluster-wide CRDs (Gateway API*, cert-manager, Prometheus Operator CRDs, Argo CD via `kubernetes_manifest`; Envoy Gateway via `helm template | kubectl apply`) applied before `apps/`. \*Skip Gateway API if already installed (`install_gateway_api_crds = false`).
 - `apps/`  → Platform via Terraform (Cilium, Cert-Manager, ArgoCD, Synology CSI)
+- `pangolin-edge/` → Oracle Cloud edge for [Pangolin](https://pangolin.net) (VCN + VM + compose via Terraform); homelab connects via Newt (`pangolin-edge/README.md`)
 - Git repo (external) → `secrets/` (SOPS encrypted), `apps/` (your apps like Plex)
 
 ## Quick start
@@ -58,7 +59,6 @@ kubectl get storageclass
 ## Notes
 - Update **GPU PCI BDFs** in `infra/main.tf`.
 - Keep **`app-manifests`** release pins (`cert_manager_release`, `argocd_release`) at or above the versions implied by the Helm charts in `apps/` so CRDs are not older than the controllers.
-- If you previously set `enable_acme_cluster_issuer`, `enable_gateway_api_routes`, or `enable_argocd_gitops_bootstrap` in `apps/config.auto.tfvars`, remove them; those resources are always managed after CRDs exist.
 
 ## ArgoCD GitOps bootstrap
 Terraform bootstraps ArgoCD to manage your external GitOps repo:
@@ -68,13 +68,14 @@ Terraform bootstraps ArgoCD to manage your external GitOps repo:
 
 ## Talos Linux Image Factory
 
-Your image schematic ID is: 8eb7f04739955fbee3f124a21332d41238efc3e776fa00694ba8a6b4aef8adbf
+Your image schematic ID is: 79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167
 ```
 customization:
     systemExtensions:
         officialExtensions:
             - siderolabs/amd-ucode
             - siderolabs/i915
+            - siderolabs/iscsi-tools
             - siderolabs/qemu-guest-agent
 ```
 
