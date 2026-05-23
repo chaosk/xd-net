@@ -1,4 +1,6 @@
 config.auto.tfvars
+# SOPS Age private key for Argo CD (see argocd_sops_age_key_file)
+sops.age.keys.txt
 terraform.tfvars
 *.tfvars
 !*.example

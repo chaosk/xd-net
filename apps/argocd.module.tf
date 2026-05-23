@@ -1,11 +1,16 @@
 module "argocd" {
   source = "./modules/argocd"
 
-  use_gateway_api     = var.argocd_use_gateway_api
-  host                = var.argocd_host
-  service_type              = var.argocd_service_type
-  gateway_class_name        = var.argocd_gateway_class_name
-  tls_secret_name           = var.argocd_tls_secret_name
-  cluster_issuer_name       = var.acme_cluster_issuer_name
+  external_url           = "https://${var.argocd_host}"
+  sops_age_key_file      = var.argocd_sops_age_key_file
+  sops_age_secret_name   = var.argocd_sops_age_secret_name
+  cmp_sops_sidecar_image = var.argocd_cmp_sops_sidecar_image
+
+  oidc_issuer           = var.argocd_oidc_issuer
+  oidc_client_id        = var.argocd_oidc_client_id
+  oidc_client_secret    = var.argocd_oidc_client_secret
+  oidc_display_name     = var.argocd_oidc_display_name
+  oidc_requested_scopes = var.argocd_oidc_requested_scopes
+  rbac_policy_csv       = var.argocd_rbac_policy_csv
 }
 

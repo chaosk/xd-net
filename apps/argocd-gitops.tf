@@ -30,7 +30,7 @@ resource "kubernetes_manifest" "argocd_platform_secrets" {
     }
   }
 
-  depends_on = [module.argocd]
+  depends_on = [module.argocd, kubernetes_secret_v1.argocd_repo_ssh]
 }
 
 resource "kubernetes_manifest" "argocd_apps_applicationset" {
@@ -82,6 +82,6 @@ resource "kubernetes_manifest" "argocd_apps_applicationset" {
     }
   }
 
-  depends_on = [module.argocd]
+  depends_on = [module.argocd, kubernetes_secret_v1.argocd_repo_ssh]
 }
 

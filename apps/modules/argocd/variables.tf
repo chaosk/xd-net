@@ -4,37 +4,64 @@ variable "namespace" {
   default     = "argocd"
 }
 
-variable "use_gateway_api" {
-  type        = bool
-  description = "Expose ArgoCD using Gateway API (Cilium Gateway)."
-  default     = true
+variable "external_url" {
+  type        = string
+  description = "Public URL for Argo CD (e.g. https://argocd.example.com). Used for redirects and callback URLs."
+  default     = null
 }
 
-variable "host" {
+variable "sops_age_key_file" {
   type        = string
-  description = "Hostname for ArgoCD."
+  description = "Path to Age keys.txt; creates a Secret and mounts it into the cmp-sops sidecar (SOPS_AGE_KEY_FILE). Gitignore. Empty = no Secret/volume (SOPS decrypt in cluster will fail)."
+  default     = ""
 }
 
-variable "service_type" {
+variable "sops_age_secret_name" {
   type        = string
-  description = "ArgoCD server Service type when not using Gateway API."
-  default     = "ClusterIP"
+  description = "Kubernetes Secret name in the Argo CD namespace holding keys.txt for SOPS_AGE_KEY_FILE."
+  default     = "argo-sops-age"
 }
 
-variable "gateway_class_name" {
+variable "cmp_sops_sidecar_image" {
   type        = string
-  description = "GatewayClass name to use."
-  default     = "cilium"
+  description = "CMP sops sidecar base image (needs /bin/sh + wget for default bootstrap). Default alpine:3.20 — first start downloads static sops to /tmp (needs egress to github.com). Override with your own image if sops is preinstalled."
+  default     = "docker.io/library/alpine:3.20"
 }
 
-variable "tls_secret_name" {
+variable "oidc_issuer" {
   type        = string
-  description = "TLS Secret name in the ArgoCD namespace used by the Gateway listener."
-  default     = "argocd-tls"
+  description = "Authentik OIDC issuer (e.g. https://authentik.example.com/application/o/<slug>/). Empty disables Dex→Authentik connector."
+  default     = ""
 }
 
-variable "cluster_issuer_name" {
+variable "oidc_client_id" {
   type        = string
-  description = "cert-manager ClusterIssuer name used to issue the Gateway certificate."
+  description = "OAuth2 client ID from Authentik. Empty disables Dex→Authentik connector."
+  default     = ""
+}
+
+variable "oidc_client_secret" {
+  type        = string
+  description = "OAuth2 client secret; stored in argocd-secret as dex.authentik.clientSecret. Empty disables Dex→Authentik connector."
+  default     = ""
+  sensitive   = true
+}
+
+variable "oidc_display_name" {
+  type        = string
+  description = "Dex connector display name in Argo CD UI."
+  default     = "Authentik"
+}
+
+variable "oidc_requested_scopes" {
+  type        = list(string)
+  description = "OIDC scopes passed to Authentik via Dex (include groups for RBAC mapping)."
+  default     = ["openid", "profile", "email", "groups"]
+}
+
+variable "rbac_policy_csv" {
+  type        = string
+  description = "Optional argocd-rbac-cm policy.csv (e.g. g, ArgoCD Admins, role:admin). Empty leaves chart default."
+  default     = ""
 }
 
