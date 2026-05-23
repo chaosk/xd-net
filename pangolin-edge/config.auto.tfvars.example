@@ -1,0 +1,36 @@
+## Copy to config.auto.tfvars (gitignored)
+
+oci_region     = "eu-frankfurt-1"
+compartment_id = "ocid1.compartment.oc1..example"
+
+# Vercel DNS (same token as apps/ — zone must be on Vercel)
+vercel_api_token = "..."
+# vercel_team_id   = "team_..."
+# manage_vercel_dns   = true
+# vercel_wildcard_dns = true
+# vercel_dns_ttl      = 300
+
+# SSH: omit both paths to auto-generate Ed25519 keys in _out/ssh/ (gitignored)
+# ssh_public_key_path  = "~/.ssh/id_ed25519.pub"
+# ssh_private_key_path = "~/.ssh/id_ed25519"
+
+pangolin_base_domain    = "ecksd.ee"
+pangolin_dashboard_host = "pangolin.ecksd.ee"
+pangolin_tunnel_host    = "pangolin.ecksd.ee"
+letsencrypt_email       = "you@example.com"
+
+# Integration API for home-operations/pangolin-operator (default: enabled, pangolin-api.<base_domain>)
+# enable_integration_api        = true
+# pangolin_integration_api_host = "pangolin-api.ecksd.ee"
+# pangolin_integration_port     = 3003
+
+# CrowdSec in front of Traefik (access logs → LAPI, bouncer on :80/:443)
+# enable_crowdsec = true
+
+# install_pangolin_via_ssh = true
+# Defaults: A1.Flex 4 OCPU / 24 GB RAM (full Always Free A1 pool for a single VM)
+# instance_shape      = "VM.Standard.A1.Flex"
+# instance_ocpus      = 4
+# instance_memory_gbs = 24
+# boot_volume_size_gbs = 50
+# instance_os_version  = "24.04"   # or "22.04"

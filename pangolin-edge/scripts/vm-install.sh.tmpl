@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Post-copy setup on the Pangolin VM (run by Terraform remote-exec or manually).
+set -euo pipefail
+
+INSTALL_DIR="${install_dir}"
+SSH_USER="${ssh_user}"
+
+cd "$${INSTALL_DIR}"
+sudo mkdir -p config/traefik/logs config/db config/letsencrypt config/crowdsec/db
+sudo touch config/letsencrypt/acme.json config/traefik/logs/access.log
+sudo chmod 600 config/letsencrypt/acme.json
+
+if ! command -v docker >/dev/null 2>&1; then
+  curl -fsSL https://get.docker.com | sudo sh
+fi
+if ! sudo docker compose version >/dev/null 2>&1; then
+  sudo apt-get update
+  sudo apt-get install -y docker-compose-plugin
+fi
+
+sudo docker compose pull
+sudo docker compose up -d
+# Pangolin reads config.yml only at startup (Integration API on 3003 needs a restart after config changes).
+sudo docker compose restart pangolin
+
+%{ if enable_crowdsec ~}
+chmod +x configure-crowdsec-bouncer.sh
+./configure-crowdsec-bouncer.sh "$${INSTALL_DIR}"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y logrotate
+sudo tee /etc/logrotate.d/pangolin-traefik > /dev/null <<'EOF'
+${logrotate_config}
+EOF
+%{ endif ~}
+
+if ! command -v ufw >/dev/null 2>&1; then
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ufw
+fi
+${ufw_ssh_allow}
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 51820/udp
+sudo ufw allow 21820/udp
+sudo ufw --force enable
+
+for ((i = 1; i <= 60; i++)); do
+  TOKEN="$(sudo docker logs pangolin 2>&1 | sed -n 's/^Token: //p' | tail -1)"
+  if [[ -n "$${TOKEN}" ]]; then
+    printf '%s' "$${TOKEN}" | sudo tee "$${INSTALL_DIR}/.setup-token" >/dev/null
+    sudo chmod 600 "$${INSTALL_DIR}/.setup-token"
+    sudo chown "$${SSH_USER}:$${SSH_USER}" "$${INSTALL_DIR}/.setup-token"
+    exit 0
+  fi
+  sleep 5
+done
+
+echo 'pangolin setup token not found in container logs' >&2
+exit 1

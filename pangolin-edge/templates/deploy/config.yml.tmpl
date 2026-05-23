@@ -1,0 +1,38 @@
+# https://docs.pangolin.net/self-host/advanced/config-file
+gerbil:
+  start_port: 51820
+  base_endpoint: "${tunnel_host}"
+
+app:
+  dashboard_url: "https://${dashboard_host}"
+  log_level: "info"
+  telemetry:
+    anonymous_usage: true
+
+domains:
+  domain1:
+    base_domain: "${base_domain}"
+
+server:
+  secret: "${server_secret}"
+%{ if enable_integration_api ~}
+  integration_port: ${integration_port}
+%{ endif ~}
+  cors:
+    origins:
+      - "https://${dashboard_host}"
+%{ if enable_integration_api ~}
+      - "https://${integration_api_host}"
+%{ endif ~}
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    allowed_headers: ["X-CSRF-Token", "Content-Type"]
+    credentials: false
+
+flags:
+  require_email_verification: false
+  disable_signup_without_invite: true
+  disable_user_create_org: false
+  allow_raw_resources: true
+%{ if enable_integration_api ~}
+  enable_integration_api: true
+%{ endif ~}

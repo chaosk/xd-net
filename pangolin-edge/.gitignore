@@ -1,0 +1,7 @@
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+config.auto.tfvars
+_out/
+_out/ssh/
