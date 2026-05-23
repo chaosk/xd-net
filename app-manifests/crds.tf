@@ -1,9 +1,23 @@
 data "http" "gateway_api_standard" {
+  count = var.install_gateway_api_crds ? 1 : 0
+
   url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/${var.gateway_api_release}/standard-install.yaml"
+}
+
+# pangolin-operator watches gateway.networking.k8s.io/v1alpha2 TCPRoute (experimental channel).
+data "http" "gateway_api_experimental_tcp_route" {
+  count = var.install_gateway_api_experimental_crds ? 1 : 0
+
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/${var.gateway_api_release}/config/crd/experimental/gateway.networking.k8s.io_tcproutes.yaml"
 }
 
 data "http" "cert_manager_crds" {
   url = "https://github.com/cert-manager/cert-manager/releases/download/${var.cert_manager_release}/cert-manager.crds.yaml"
+}
+
+# ServiceMonitor / PodMonitor / Prometheus — required by Envoy Gateway addons & other GitOps monitoring manifests.
+data "http" "prometheus_operator_crds" {
+  url = "https://github.com/prometheus-operator/prometheus-operator/releases/download/${var.prometheus_operator_release}/stripped-down-crds.yaml"
 }
 
 data "http" "argocd_install" {
@@ -13,19 +27,59 @@ data "http" "argocd_install" {
 locals {
   # Multi-doc YAML often has a leading comment-only chunk before the first --- (e.g. Gateway API
   # standard-install). yamldecode fails on comment-only fragments; skip via try().
-  split_yaml_documents = { for raw in [
-    data.http.gateway_api_standard.response_body,
-    data.http.cert_manager_crds.response_body,
-    ] : raw => [
-    for doc in [
-      for part in split("\n---", raw) :
-      try(yamldecode(trimspace(part)), null)
-      if trimspace(part) != "" && trimspace(part) != "..."
-    ] : doc if doc != null
-  ] }
+  split_yaml_documents = merge(
+    var.install_gateway_api_crds ? {
+      (data.http.gateway_api_standard[0].response_body) = [
+        for doc in [
+          for part in split("\n---", data.http.gateway_api_standard[0].response_body) :
+          try(yamldecode(trimspace(part)), null)
+          if trimspace(part) != "" && trimspace(part) != "..."
+        ] : doc if doc != null
+      ]
+    } : {},
+    var.install_gateway_api_experimental_crds ? {
+      (data.http.gateway_api_experimental_tcp_route[0].response_body) = [
+        try(yamldecode(trimspace(data.http.gateway_api_experimental_tcp_route[0].response_body)), null)
+      ]
+    } : {},
+    {
+      (data.http.cert_manager_crds.response_body) = [
+        for doc in [
+          for part in split("\n---", data.http.cert_manager_crds.response_body) :
+          try(yamldecode(trimspace(part)), null)
+          if trimspace(part) != "" && trimspace(part) != "..."
+        ] : doc if doc != null
+      ]
+    },
+    {
+      (data.http.prometheus_operator_crds.response_body) = [
+        for doc in [
+          for part in split("\n---", data.http.prometheus_operator_crds.response_body) :
+          try(yamldecode(trimspace(part)), null)
+          if trimspace(part) != "" && trimspace(part) != "..."
+        ] : doc if doc != null
+      ]
+    },
+  )
 
-  gateway_docs      = local.split_yaml_documents[data.http.gateway_api_standard.response_body]
+  gateway_standard_body       = try(data.http.gateway_api_standard[0].response_body, null)
+  gateway_experimental_bodies = var.install_gateway_api_experimental_crds ? [data.http.gateway_api_experimental_tcp_route[0].response_body] : []
+
+  gateway_docs = flatten([
+    for body, docs in local.split_yaml_documents :
+    docs
+    if local.gateway_standard_body != null && body == local.gateway_standard_body
+  ])
+
+  gateway_experimental_docs = flatten([
+    for body, docs in local.split_yaml_documents :
+    docs
+    if contains(local.gateway_experimental_bodies, body)
+  ])
+
   cert_manager_docs = local.split_yaml_documents[data.http.cert_manager_crds.response_body]
+
+  prometheus_operator_docs = local.split_yaml_documents[data.http.prometheus_operator_crds.response_body]
 
   argocd_docs = [
     for doc in [
@@ -41,14 +95,20 @@ locals {
   ]
 
   gateway_manifests = {
-    for i, doc in local.gateway_docs :
-    "gateway-api/${try(doc.kind, "unknown")}-${try(doc.metadata.name, i)}" => doc
-    if try(doc.apiVersion, null) != null && try(doc.kind, null) != null
+    for i, doc in concat(local.gateway_docs, local.gateway_experimental_docs) :
+    "gateway-api/${try(doc.metadata.name, i)}" => doc
+    if try(doc.kind, "") == "CustomResourceDefinition" && try(doc.metadata.name, null) != null
   }
 
   cert_manager_manifests = {
     for i, doc in local.cert_manager_docs :
     "cert-manager/${try(doc.metadata.name, i)}" => doc
+    if try(doc.kind, "") == "CustomResourceDefinition" && try(doc.metadata.name, null) != null
+  }
+
+  prometheus_operator_manifests = {
+    for i, doc in local.prometheus_operator_docs :
+    "prometheus-operator/${try(doc.metadata.name, i)}" => doc
     if try(doc.kind, "") == "CustomResourceDefinition" && try(doc.metadata.name, null) != null
   }
 
@@ -61,6 +121,7 @@ locals {
   crd_manifests = merge(
     local.gateway_manifests,
     local.cert_manager_manifests,
+    local.prometheus_operator_manifests,
     local.argocd_manifests,
   )
 }

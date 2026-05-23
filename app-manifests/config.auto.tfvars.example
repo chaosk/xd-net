@@ -4,5 +4,9 @@
 
 # Pin releases to match your cluster / chart choices:
 # gateway_api_release   = "v1.4.1"
+# install_gateway_api_crds = false   # true on fresh clusters; false if GW API CRDs already exist
+# install_gateway_api_experimental_crds = false  # TCPRoute v1alpha2; required for pangolin-operator
 # cert_manager_release  = "v1.17.1"
+# prometheus_operator_release = "v0.79.2"   # ServiceMonitor CRDs for monitoring/ GitOps apps
 # argocd_release        = "v2.14.0"
+# envoy_gateway_release = "v1.5.0"   # match apps/envoy_gateway_version
