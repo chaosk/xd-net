@@ -56,6 +56,18 @@ kubectl -n argocd get applicationsets,applications
 kubectl get storageclass
 ```
 
+## Git hooks
+
+Commits must be [GPG-signed](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work). [pre-commit](https://pre-commit.com/) runs [require-signed-commits](https://github.com/pre-commit-garage/pre-commit-metadata-hooks) on `git push` and rejects any commit missing a `gpgsig` header.
+
+One-time setup:
+
+```bash
+brew install pre-commit   # or: pip install pre-commit
+pre-commit install
+git config commit.gpgsign true
+```
+
 ## Notes
 - Update **GPU PCI BDFs** in `infra/main.tf`.
 - Keep **`app-manifests`** release pins (`cert_manager_release`, `argocd_release`) at or above the versions implied by the Helm charts in `apps/` so CRDs are not older than the controllers.
