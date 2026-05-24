@@ -12,6 +12,20 @@
 # -----END OPENSSH PRIVATE KEY-----
 # EOT
 
+# Image Updater git push (deploy key on repo, write access — can be bot-owned)
+# git_image_updater_ssh_private_key = <<-EOT
+# -----BEGIN OPENSSH PRIVATE KEY-----
+# ...
+# -----END OPENSSH PRIVATE KEY-----
+# EOT
+
+# Image Updater commit signing (Signing key on bot account profile, not a deploy key)
+# git_image_updater_signing_ssh_private_key = <<-EOT
+# -----BEGIN OPENSSH PRIVATE KEY-----
+# ...
+# -----END OPENSSH PRIVATE KEY-----
+# EOT
+
 # ACME / Let's Encrypt
 acme_email = "you@example.com"
 

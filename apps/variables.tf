@@ -28,6 +28,32 @@ variable "git_revision" {
   default = "HEAD"
 }
 
+variable "git_image_updater_secret" {
+  type        = string
+  description = "argocd namespace Secret for Image Updater git push (SSH deploy key)."
+  default     = "argocd-image-updater-git"
+}
+
+variable "git_image_updater_ssh_private_key" {
+  type        = string
+  description = "OpenSSH private key for Image Updater git push to git_repo_url (GitHub deploy key with write access). Leave empty to skip creating the Secret."
+  default     = ""
+  sensitive   = true
+}
+
+variable "git_image_updater_signing_secret" {
+  type        = string
+  description = "argocd namespace Secret holding the bot SSH commit-signing private key."
+  default     = "argocd-image-updater-signing"
+}
+
+variable "git_image_updater_signing_ssh_private_key" {
+  type        = string
+  description = "OpenSSH private key for Image Updater commit signing (GitHub Signing key on the bot account). Leave empty to skip."
+  default     = ""
+  sensitive   = true
+}
+
 variable "git_path_apps" {
   type    = string
   default = "apps"

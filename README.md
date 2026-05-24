@@ -75,7 +75,7 @@ git config commit.gpgsign true
 ## ArgoCD GitOps bootstrap
 Terraform bootstraps ArgoCD to manage your external GitOps repo:
 - `Application` **platform-secrets** → syncs `git_path_secrets` using the **SOPS** config management plugin
-- `ApplicationSet` **apps** → auto-syncs `${git_path_apps}/*`
+- `ApplicationSet` **apps** → auto-syncs `${git_path_apps}/*` (one Application per app directory). Argo CD Image Updater rules live in **xd-net-apps** `apps/argocd-image-updater/image-updater.yaml`; Terraform only provisions Image Updater git/signing Secrets in `argocd`.
 
 
 ## Talos Linux Image Factory
