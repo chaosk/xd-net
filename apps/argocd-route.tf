@@ -5,6 +5,16 @@ resource "kubernetes_manifest" "argocd_route" {
     metadata = {
       name      = "argocd"
       namespace = "argocd"
+      annotations = {
+        "gethomepage.dev/enabled"      = "true"
+        "gethomepage.dev/group"        = "Management"
+        "gethomepage.dev/weight"       = "25"
+        "gethomepage.dev/name"         = "Argo CD"
+        "gethomepage.dev/description"  = "GitOps deployments"
+        "gethomepage.dev/icon"         = "si-argo"
+        "gethomepage.dev/href"         = "https://${var.argocd_host}"
+        "gethomepage.dev/pod-selector" = "app.kubernetes.io/name=argocd-server"
+      }
     }
     spec = {
       parentRefs = [
