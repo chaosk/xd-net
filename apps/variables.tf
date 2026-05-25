@@ -54,6 +54,25 @@ variable "git_image_updater_signing_ssh_private_key" {
   sensitive   = true
 }
 
+variable "ghcr_image_updater_secret" {
+  type        = string
+  description = "argocd namespace Secret for Image Updater GHCR registry API (username:token in creds key)."
+  default     = "argocd-image-updater-ghcr"
+}
+
+variable "ghcr_image_updater_username" {
+  type        = string
+  description = "GitHub username for GHCR login (bot account, same as Image Updater git.user)."
+  default     = "ecksd-ee"
+}
+
+variable "ghcr_image_updater_token" {
+  type        = string
+  description = "GitHub PAT for the bot account with read:packages (classic) or packages read (fine-grained). Leave empty to skip creating the Secret."
+  default     = ""
+  sensitive   = true
+}
+
 variable "git_path_apps" {
   type    = string
   default = "apps"

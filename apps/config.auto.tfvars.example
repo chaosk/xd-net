@@ -26,6 +26,10 @@
 # -----END OPENSSH PRIVATE KEY-----
 # EOT
 
+# Image Updater GHCR (bot PAT: read:packages — avoids anonymous rate limits / timeouts)
+# ghcr_image_updater_username = "ecksd-ee"
+# ghcr_image_updater_token = "ghp_..."
+
 # ACME / Let's Encrypt
 acme_email = "you@example.com"
 
