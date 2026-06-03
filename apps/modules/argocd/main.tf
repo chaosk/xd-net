@@ -22,6 +22,7 @@ connectors:
       clientSecret: $dex.authentik.clientSecret
       redirectURI: ${var.external_url}/api/dex/callback
       insecureEnableGroups: true
+      getUserInfo: false
       scopes:
 ${join("\n", [for s in var.oidc_requested_scopes : "        - ${s}"])}
 EOT
