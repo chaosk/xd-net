@@ -20,6 +20,7 @@ connectors:
       issuer: ${var.oidc_issuer}
       clientID: ${var.oidc_client_id}
       clientSecret: $dex.authentik.clientSecret
+      redirectURI: ${var.external_url}/api/dex/callback
       insecureEnableGroups: true
       scopes:
 ${join("\n", [for s in var.oidc_requested_scopes : "        - ${s}"])}
