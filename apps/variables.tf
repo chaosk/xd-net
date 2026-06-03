@@ -240,14 +240,43 @@ variable "envoy_proxy_memory_limit" {
   default     = "1Gi"
 }
 
+variable "gateway_node_name" {
+  type        = string
+  description = "Worker node that receives gateway_node_label (Envoy proxy + Cilium L2 announcer schedule/announce only there). Empty disables pinning."
+  default     = "xd-w-2"
+}
+
+variable "gateway_node_label" {
+  type = object({
+    key   = string
+    value = string
+  })
+  description = "Node label applied to gateway_node_name; Envoy and Cilium L2AnnouncementPolicy select on this label."
+  default = {
+    key   = "xd.ecksd.ee/gateway"
+    value = "true"
+  }
+}
+
 variable "envoy_proxy_external_traffic_policy" {
   type        = string
-  description = "Envoy Gateway proxy Service externalTrafficPolicy. Use Cluster with Cilium L2 (leader may differ from the Envoy pod node); Local only works if the L2 announcer and endpoints share the same node."
+  description = "Envoy Gateway proxy Service externalTrafficPolicy. Use Cluster when gateway pinning is disabled; Local preserves client IP when Envoy and L2 share the labeled worker."
   default     = "Cluster"
 
   validation {
     condition     = contains(["Cluster", "Local"], var.envoy_proxy_external_traffic_policy)
     error_message = "envoy_proxy_external_traffic_policy must be Cluster or Local."
+  }
+}
+
+variable "gateway_xff_num_trusted_hops" {
+  type        = number
+  description = "ClientTrafficPolicy: X-Forwarded-For hops to trust at the shared Gateway (0 = use the connection source IP; increase when an upstream proxy such as Pangolin already sets XFF)."
+  default     = 0
+
+  validation {
+    condition     = var.gateway_xff_num_trusted_hops >= 0 && var.gateway_xff_num_trusted_hops <= 10
+    error_message = "gateway_xff_num_trusted_hops must be between 0 and 10."
   }
 }
 

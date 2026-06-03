@@ -51,6 +51,11 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy" {
           }
         }
       },
+      local.gateway_pin_enabled ? {
+        nodeSelector = {
+          matchLabels = local.gateway_node_selector
+        }
+      } : {},
       length(var.cilium_l2_announcement_interfaces) > 0 ? { interfaces = var.cilium_l2_announcement_interfaces } : {}
     )
   }
@@ -58,5 +63,6 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy" {
   depends_on = [
     cilium.cilium,
     kubernetes_manifest.cilium_loadbalancer_ip_pool,
+    kubernetes_labels.gateway_node,
   ]
 }

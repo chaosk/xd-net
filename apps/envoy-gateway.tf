@@ -49,21 +49,28 @@ resource "kubernetes_manifest" "envoy_proxy_config" {
       provider = {
         type = "Kubernetes"
         kubernetes = {
-          envoyDeployment = {
-            replicas = var.envoy_proxy_replicas
-            container = {
-              resources = {
-                requests = {
-                  cpu    = var.envoy_proxy_cpu_request
-                  memory = var.envoy_proxy_memory_request
-                }
-                limits = {
-                  cpu    = var.envoy_proxy_cpu_limit
-                  memory = var.envoy_proxy_memory_limit
+          envoyDeployment = merge(
+            {
+              replicas = var.envoy_proxy_replicas
+              container = {
+                resources = {
+                  requests = {
+                    cpu    = var.envoy_proxy_cpu_request
+                    memory = var.envoy_proxy_memory_request
+                  }
+                  limits = {
+                    cpu    = var.envoy_proxy_cpu_limit
+                    memory = var.envoy_proxy_memory_limit
+                  }
                 }
               }
-            }
-          }
+            },
+            local.gateway_pin_enabled ? {
+              pod = {
+                nodeSelector = local.gateway_node_selector
+              }
+            } : {}
+          )
           envoyService = {
             type                      = "LoadBalancer"
             externalTrafficPolicy     = var.envoy_proxy_external_traffic_policy
@@ -76,5 +83,6 @@ resource "kubernetes_manifest" "envoy_proxy_config" {
   depends_on = [
     helm_release.envoy_gateway,
     kubernetes_namespace_v1.gateway,
+    kubernetes_labels.gateway_node,
   ]
 }

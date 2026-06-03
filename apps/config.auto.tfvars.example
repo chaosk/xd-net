@@ -95,8 +95,13 @@ synology_password = "change-me"
 # envoy_proxy_memory_limit   = "1Gi"
 # envoy_proxy_cpu_request    = "100m"
 # envoy_proxy_cpu_limit      = "2000m"
-# Cluster required for Cilium L2 leader on a different node than the Envoy pod (default).
-# envoy_proxy_external_traffic_policy = "Cluster"
+# Pin Envoy + Cilium L2 via xd.ecksd.ee/gateway on one worker (required for externalTrafficPolicy Local).
+# gateway_node_name = "xd-w-2"
+# gateway_node_label = { key = "xd.ecksd.ee/gateway", value = "true" }
+# envoy_proxy_external_traffic_policy = "Local"
+# gateway_xff_num_trusted_hops = 0
+# Increase when traffic arrives via Pangolin/Traefik with X-Forwarded-For already set (e.g. auth.ecksd.ee).
+# gateway_xff_num_trusted_hops = 1
 # cilium_l2_loadbalancer_ip_pool = { start = "192.168.1.240", stop = "192.168.1.250" }
 # cilium_l2_announcement_interfaces = ["eth0"]
 # Cilium resource caps (defaults in variables.tf — apply so agents are not BestEffort)
