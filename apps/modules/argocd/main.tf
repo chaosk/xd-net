@@ -88,7 +88,9 @@ SCRIPT
         # Global default for `kustomize build` (ApplicationSet template cannot set per-app
         # kustomize in kubernetes_manifest — CRD schema omits it). Required for Kustomize
         # helmCharts / HelmChartInflationGenerator (e.g. Authentik OCI chart).
-        { "kustomize.buildOptions" = "--enable-helm" }
+        { "kustomize.buildOptions" = "--enable-helm" },
+        # Homepage widget API token account (role:readonly in rbac policy.csv).
+        { "accounts.homepage" = "apiKey" }
       )
       cmp = {
         create = true

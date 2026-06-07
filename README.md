@@ -8,7 +8,7 @@ ArgoCD uses an **ApplicationSet** to auto-load apps from a path in your Git repo
 - `app-manifests/` → Cluster-wide CRDs (Gateway API*, cert-manager, Prometheus Operator CRDs, Argo CD via `kubernetes_manifest`; Envoy Gateway via `helm template | kubectl apply`) applied before `apps/`. \*Skip Gateway API if already installed (`install_gateway_api_crds = false`).
 - `apps/`  → Platform via Terraform (Cilium, Cert-Manager, ArgoCD, Synology CSI)
 - `pangolin-edge/` → Oracle Cloud edge for [Pangolin](https://pangolin.net) (VCN + VM + compose via Terraform); homelab connects via Newt (`pangolin-edge/README.md`)
-- Git repo (external) → `secrets/` (SOPS encrypted), `apps/` (your apps like Plex)
+- [xd-net-apps](https://github.com/chaosk/xd-net-apps) (external) → `secrets/` (SOPS encrypted), `apps/` (homelab applications)
 
 ## Quick start
 1) **Provision cluster**
@@ -22,7 +22,7 @@ This writes these files automatically:
 - `infra/_out/kubeconfig`
 - `infra/_out/talosconfig`
 
-2) **Configure your Git repo**
+2) **Configure [xd-net-apps](https://github.com/chaosk/xd-net-apps)** (or your fork)
 - Create Age key: `age-keygen -o ~/.config/sops/age/keys.txt` (copy public key)
 - Create `secrets/synology-secret.yaml`, then encrypt:
 ```bash
@@ -73,9 +73,9 @@ git config commit.gpgsign true
 - Keep **`app-manifests`** release pins (`cert_manager_release`, `argocd_release`) at or above the versions implied by the Helm charts in `apps/` so CRDs are not older than the controllers.
 
 ## ArgoCD GitOps bootstrap
-Terraform bootstraps ArgoCD to manage your external GitOps repo:
+Terraform bootstraps ArgoCD to manage the external GitOps repo [**xd-net-apps**](https://github.com/chaosk/xd-net-apps):
 - `Application` **platform-secrets** → syncs `git_path_secrets` using the **SOPS** config management plugin
-- `ApplicationSet` **apps** → auto-syncs `${git_path_apps}/*` (one Application per app directory). Argo CD Image Updater rules live in **xd-net-apps** `apps/argocd-image-updater/image-updater.yaml`; Terraform provisions Image Updater git/signing/GHCR Secrets in `argocd`.
+- `ApplicationSet` **apps** → auto-syncs `${git_path_apps}/*` (one Application per app directory). Argo CD Image Updater rules live in [xd-net-apps](https://github.com/chaosk/xd-net-apps) `apps/argocd-image-updater/image-updater.yaml`; Terraform provisions Image Updater git/signing/GHCR Secrets in `argocd`.
 
 
 ## Talos Linux Image Factory

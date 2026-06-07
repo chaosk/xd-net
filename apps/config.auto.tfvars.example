@@ -82,6 +82,7 @@ synology_password = "change-me"
 # argocd_rbac_policy_csv      = <<-EOT
 # g, ArgoCD Admins, role:admin
 # g, ArgoCD Viewers, role:readonly
+# g, homepage, role:readonly
 # EOT
 
 # Envoy Gateway LoadBalancer (Cilium LB IPAM + L2): pick unused LAN IPs for the shared Gateway Service

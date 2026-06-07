@@ -14,6 +14,10 @@ resource "kubernetes_manifest" "argocd_route" {
         "gethomepage.dev/icon"         = "si-argo"
         "gethomepage.dev/href"         = "https://${var.argocd_host}"
         "gethomepage.dev/pod-selector" = "app.kubernetes.io/name=argocd-server"
+        "gethomepage.dev/widget.type"  = "argocd"
+        "gethomepage.dev/widget.url"   = "http://argocd-server.argocd.svc.cluster.local"
+        "gethomepage.dev/widget.key"   = "{{HOMEPAGE_VAR_ARGOCD_API_KEY}}"
+        "gethomepage.dev/widget.fields" = "[\"synced\", \"outOfSync\", \"healthy\", \"degraded\"]"
       }
     }
     spec = {
