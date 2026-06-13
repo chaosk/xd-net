@@ -66,3 +66,34 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy" {
     kubernetes_labels.gateway_node,
   ]
 }
+
+# L2 announce for app LoadBalancers (e.g. plex-lan) that opt in via ecksd.ee/l2-loadbalancer.
+# No node pin — externalTrafficPolicy Local limits announcement to nodes with endpoints.
+resource "kubernetes_manifest" "cilium_l2_announcement_policy_apps" {
+  count = local.cilium_l2_pool_enabled ? 1 : 0
+
+  manifest = {
+    apiVersion = "cilium.io/v2alpha1"
+    kind       = "CiliumL2AnnouncementPolicy"
+    metadata = {
+      name = "apps-l2-announce"
+    }
+    spec = merge(
+      {
+        externalIPs     = false
+        loadBalancerIPs = true
+        serviceSelector = {
+          matchLabels = {
+            "ecksd.ee/l2-loadbalancer" = "true"
+          }
+        }
+      },
+      length(var.cilium_l2_announcement_interfaces) > 0 ? { interfaces = var.cilium_l2_announcement_interfaces } : {}
+    )
+  }
+
+  depends_on = [
+    cilium.cilium,
+    kubernetes_manifest.cilium_loadbalancer_ip_pool,
+  ]
+}
