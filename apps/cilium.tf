@@ -14,6 +14,8 @@ locals {
     # Required for CiliumLoadBalancerIPPool + CiliumL2AnnouncementPolicy to take effect:
     # LB IPAM is default (defaultLBServiceIPAM=lbipam); L2 ARP/NDP for those IPs is opt-in.
     "l2announcements.enabled=true",
+    # Allow Multus alongside Cilium when multus_enabled (see multus.tf).
+    var.multus_enabled ? "cni.exclusive=false" : "cni.exclusive=true",
     # Prometheus metrics — https://docs.cilium.io/en/stable/observability/metrics/
     "prometheus.enabled=true",
     "operator.prometheus.enabled=true",

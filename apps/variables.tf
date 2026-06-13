@@ -676,3 +676,9 @@ variable "pangolin_newtsite_newt_tag" {
   description = "newt container image tag."
   default     = "1.12.5"
 }
+
+variable "multus_enabled" {
+  type        = bool
+  description = "Install Multus CNI for secondary pod interfaces (macvlan). Sets Cilium cni.exclusive=false."
+  default     = true
+}

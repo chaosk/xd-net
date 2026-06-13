@@ -1,0 +1,13 @@
+# Multus thick DaemonSet for Talos + Cilium (primary CNI stays Cilium; set cni.exclusive=false).
+# https://docs.siderolabs.com/kubernetes-guides/cni/multus
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.2.0/deployments/multus-daemonset-thick.yml
+
+patches:
+  - path: patches/talos-netns.yaml
+  - path: patches/talos-install-binary.yaml
+  - path: patches/install-macvlan.yaml
+  - path: patches/resources.yaml

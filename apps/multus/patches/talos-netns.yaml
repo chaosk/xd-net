@@ -1,0 +1,23 @@
+# Talos exposes pod netns under /var/run/netns (not /run/netns). Replace the upstream
+# mount (do not add a second one — kustomize merge would leave both and break chroot).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-multus-ds
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+        - name: kube-multus
+          volumeMounts:
+            - name: host-run-netns
+              mountPath: /run/netns
+              $patch: delete
+            - name: host-run-netns
+              mountPath: /var/run/netns
+              mountPropagation: HostToContainer
+      volumes:
+        - name: host-run-netns
+          hostPath:
+            path: /var/run/netns/

@@ -1,0 +1,31 @@
+# Talos ships bridge/host-local but not macvlan/sbr; fetch from upstream CNI plugins release.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-multus-ds
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: install-macvlan-cni
+          image: docker.io/library/alpine:3.22
+          command:
+            - sh
+            - -ec
+            - |
+              apk add --no-cache curl
+              curl -fsSL -o /tmp/cni.tgz \
+                "https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz"
+              mkdir -p /tmp/cni
+              tar xzf /tmp/cni.tgz -C /tmp/cni
+              for bin in macvlan sbr; do
+                install -m 755 "/tmp/cni/$bin" "/host/opt/cni/bin/$bin"
+              done
+          securityContext:
+            privileged: true
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
+              mountPropagation: Bidirectional
