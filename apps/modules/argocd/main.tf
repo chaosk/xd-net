@@ -10,6 +10,13 @@ locals {
 
   rbac_policy_set = trimspace(var.rbac_policy_csv) != ""
 
+  github_webhook_secret_set = trimspace(var.github_webhook_secret) != ""
+
+  argocd_secret_extra = merge(
+    local.dex_authentik_enabled ? { "dex.authentik.clientSecret" = var.oidc_client_secret } : {},
+    local.github_webhook_secret_set ? { "webhook.github.secret" = var.github_webhook_secret } : {},
+  )
+
   # Dex OIDC connector → Authentik (https://integrations.goauthentik.io/infrastructure/argocd/)
   dex_config_block = <<-EOT
 connectors:
@@ -110,11 +117,9 @@ SCRIPT
         }
       }
     },
-    local.dex_authentik_enabled ? {
+    length(local.argocd_secret_extra) > 0 ? {
       secret = {
-        extra = {
-          "dex.authentik.clientSecret" = var.oidc_client_secret
-        }
+        extra = local.argocd_secret_extra
       }
     } : {},
     local.rbac_policy_set ? {

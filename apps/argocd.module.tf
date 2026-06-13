@@ -11,6 +11,7 @@ module "argocd" {
   oidc_client_secret    = var.argocd_oidc_client_secret
   oidc_display_name     = var.argocd_oidc_display_name
   oidc_requested_scopes = var.argocd_oidc_requested_scopes
-  rbac_policy_csv       = var.argocd_rbac_policy_csv
+  rbac_policy_csv         = var.argocd_rbac_policy_csv
+  github_webhook_secret   = var.argocd_github_webhook_secret
 }
 

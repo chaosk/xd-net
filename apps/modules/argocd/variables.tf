@@ -65,3 +65,10 @@ variable "rbac_policy_csv" {
   default     = ""
 }
 
+variable "github_webhook_secret" {
+  type        = string
+  description = "GitHub webhook HMAC secret for /api/webhook (argocd_webhook_host). Stored in argocd-secret as webhook.github.secret."
+  default     = ""
+  sensitive   = true
+}
+

@@ -65,6 +65,12 @@ synology_password = "change-me"
 # ArgoCD host override (optional)
 # argocd_host = "argocd.net.ecksd.ee"
 
+# Argo CD Git webhook via Pangolin (argocd-webhook-route.tf). DNS → Pangolin edge, not homelab Gateway.
+# Pangolin path limit: pangolin-operator/target-path annotations (HTTPRoute path match alone is not enough).
+# argocd_webhook_host = "argocd.ecksd.ee"
+# GitHub → xd-net-apps → Webhooks: payload https://<argocd_webhook_host>/api/webhook, same secret below.
+# argocd_github_webhook_secret = "<openssl rand -hex 32>"
+
 # SOPS (platform-secrets): Age keys file on disk — never commit it (see apps/.gitignore). Paths are relative to cwd when you run terraform apply (use apps/ as cwd).
 # argocd_sops_age_key_file = "./sops.age.keys.txt"
 # argocd_sops_age_secret_name = "argo-sops-age"

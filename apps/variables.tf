@@ -89,6 +89,12 @@ variable "argocd_host" {
   default     = "argocd.net.ecksd.ee"
 }
 
+variable "argocd_webhook_host" {
+  type        = string
+  description = "Pangolin-only hostname for Argo CD Git webhooks (/api/webhook). DNS → Pangolin edge, not the homelab Gateway LB."
+  default     = "argocd.ecksd.ee"
+}
+
 variable "argocd_sops_age_key_file" {
   type        = string
   description = "Path to Age private keys file for Argo CD SOPS CMP (SOPS_AGE_KEY_FILE). Gitignored by default (see apps/.gitignore). Empty = no Secret or mount. Use an absolute path or a path relative to the Terraform working directory (typically apps/)."
@@ -142,6 +148,13 @@ variable "argocd_rbac_policy_csv" {
   type        = string
   description = "Optional argocd-rbac-cm policy.csv (e.g. g, ArgoCD Admins, role:admin). Often required when using OIDC groups."
   default     = ""
+}
+
+variable "argocd_github_webhook_secret" {
+  type        = string
+  description = "GitHub webhook secret for Argo CD /api/webhook (argocd_webhook_host). Same value as GitHub → xd-net-apps → Webhooks. Stored in argocd-secret as webhook.github.secret."
+  default     = ""
+  sensitive   = true
 }
 
 variable "gateway_namespace" {
