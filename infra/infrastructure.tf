@@ -11,6 +11,7 @@ locals {
   })
   # searchDomains.disableDefault belongs on ResolverConfig, not machine.network.searchDomains.
   talos_resolver_search_domains_patch = file("${path.module}/patches/resolver-search-domains.yaml")
+  talos_kubelet_node_ip_patch = file("${path.module}/patches/kubelet-node-ip.yaml")
 
   control_plane_names = { for n in local.control_planes : n.name => true }
 
@@ -41,6 +42,7 @@ resource "proxmox_vm_qemu" "nodes" {
   description = "Talos K8s ${each.value.gpu ? "GPU " : ""}node - ${var.cluster_name}"
 
   # Hardware
+  boot      = "order=scsi0;ide0" # disk first after install; ISO fallback for empty disk / recovery
   bios      = "ovmf"
   scsihw    = "virtio-scsi-pci"
   agent     = var.enable_qemu_guest_agent ? 1 : 0
@@ -89,6 +91,18 @@ resource "proxmox_vm_qemu" "nodes" {
     bridge  = var.vm_bridge
     macaddr = each.value.macaddr
     tag     = var.vm_vlan_id
+  }
+
+  # IoT-with-internet VLAN (192.168.2.0/24) for Multus macvlan on workers (Home Assistant).
+  dynamic "network" {
+    for_each = !lookup(local.control_plane_names, each.key, false) && var.worker_iot_vlan_id != null ? [1] : []
+    content {
+      id      = 1
+      model   = var.network_model
+      bridge  = var.vm_bridge
+      macaddr = each.value.iot_macaddr
+      tag     = var.worker_iot_vlan_id
+    }
   }
 
   # GPU passthrough for specified nodes
@@ -191,12 +205,15 @@ data "talos_machine_configuration" "worker_full" {
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   talos_version    = var.talos_version
-  config_patches = [
+  config_patches = concat([
     local_file.worker_cfg[each.key].content,
     local_file.worker_hostname_cfg[each.key].content,
     local.talos_local_path_user_volume_patch,
     local.talos_resolver_search_domains_patch,
-  ]
+    local.talos_kubelet_node_ip_patch,
+  ], var.worker_iot_vlan_id != null ? [templatefile("${path.module}/patches/worker-iot-nic.yaml.tmpl", {
+    iot_macaddr = each.value.iot_macaddr
+  })] : [])
 }
 
 resource "local_file" "worker_full_cfg" {
@@ -225,6 +242,7 @@ resource "talos_machine_configuration_apply" "cp" {
     local_file.cp_cfg[each.key].content,
     local_file.cp_hostname_cfg[each.key].content,
     local.talos_resolver_search_domains_patch,
+    local.talos_kubelet_node_ip_patch,
   ]
 
   depends_on = [proxmox_vm_qemu.nodes]
@@ -238,12 +256,15 @@ resource "talos_machine_configuration_apply" "worker" {
   endpoint                    = each.value.fqdn
   node                        = each.value.fqdn
   machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration
-  config_patches = [
+  config_patches = concat([
     local_file.worker_cfg[each.key].content,
     local_file.worker_hostname_cfg[each.key].content,
     local.talos_local_path_user_volume_patch,
     local.talos_resolver_search_domains_patch,
-  ]
+    local.talos_kubelet_node_ip_patch,
+  ], var.worker_iot_vlan_id != null ? [templatefile("${path.module}/patches/worker-iot-nic.yaml.tmpl", {
+    iot_macaddr = each.value.iot_macaddr
+  })] : [])
 
   depends_on = [
     proxmox_vm_qemu.nodes,

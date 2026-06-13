@@ -30,3 +30,7 @@ pm_node     = "pve"
 # talos_iso_url  = "https://factory.talos.dev/image/<schematic>/<version>/metal-amd64-secureboot.iso"
 # talos_iso_name = "talos-<version>-metal-amd64-secureboot.iso"
 
+# Network (Proxmox VLAN tags on vmbr*)
+# vm_vlan_id = 4              # primary NIC — compute (192.168.4.0/24)
+# worker_iot_vlan_id = 2      # second worker NIC — IoT w/ internet (192.168.2.0/24); null to disable
+# IoT NIC is macvlan parent only (no host IP). Kubelet InternalIP stays on 192.168.4.0/24 (patches/kubelet-node-ip.yaml).

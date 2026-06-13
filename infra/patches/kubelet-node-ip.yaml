@@ -1,0 +1,8 @@
+# Pin kubelet/node InternalIP to the primary compute VLAN (192.168.4.0/24).
+# Workers also have an IoT NIC (192.168.2.0/24) for Multus macvlan; without this,
+# Talos may register 192.168.2.x as the Kubernetes node address.
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 192.168.4.0/24

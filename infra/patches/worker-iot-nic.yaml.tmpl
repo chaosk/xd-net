@@ -1,0 +1,9 @@
+# Second Proxmox NIC (access VLAN 2 / 192.168.2.0/24) for Multus macvlan parent.
+# No address on the host — macvlan pods use this link only.
+# hardwareAddr matches the fixed Proxmox net1 MAC (see locals.tf iot_macaddr).
+machine:
+  network:
+    interfaces:
+      - deviceSelector:
+          hardwareAddr: "${iot_macaddr}"
+        dhcp: false

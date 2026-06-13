@@ -145,6 +145,12 @@ variable "vm_vlan_id" {
   description = "VLAN ID for primary network"
 }
 
+variable "worker_iot_vlan_id" {
+  type        = number
+  default     = 2
+  description = "Access VLAN for a second worker NIC (192.168.2.0/24 IoT-with-internet; Home Assistant macvlan). Set null to omit the extra NIC."
+}
+
 # ============================================
 # CLUSTER CONFIGURATION
 # ============================================
