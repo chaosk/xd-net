@@ -1,0 +1,125 @@
+# Labels nodes multus.io/ready=true when the local Multus thick daemon socket exists.
+# Separate from kube-multus-ds so labeler restarts do not destabilize the CNI DaemonSet.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: multus-node-labeler
+  namespace: kube-system
+  labels:
+    app: multus-node-labeler
+spec:
+  selector:
+    matchLabels:
+      app: multus-node-labeler
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: multus-node-labeler
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      priorityClassName: system-node-critical
+      serviceAccountName: multus
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+        - operator: Exists
+          effect: NoExecute
+      initContainers:
+        - name: clear-multus-node-label
+          image: docker.io/library/alpine:3.22
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache curl >/dev/null
+              TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+              CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              curl -sf --cacert "$CACERT" \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json-patch+json" \
+                -X PATCH \
+                -d '[{"op":"remove","path":"/metadata/labels/multus.io~1ready"}]' \
+                "https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${NODE_NAME}" \
+                || true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+      containers:
+        - name: labeler
+          image: docker.io/library/alpine:3.22
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache curl >/dev/null
+              TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+              CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              API="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${NODE_NAME}"
+
+              clear_label() {
+                curl -sf --cacert "$CACERT" \
+                  -H "Authorization: Bearer $TOKEN" \
+                  -H "Content-Type: application/json-patch+json" \
+                  -X PATCH \
+                  -d '[{"op":"remove","path":"/metadata/labels/multus.io~1ready"}]' \
+                  "$API" >/dev/null 2>&1 || true
+              }
+              trap clear_label EXIT TERM INT
+
+              echo "Waiting for ${MULTUS_SOCKET}..."
+              while [ ! -S "${MULTUS_SOCKET}" ]; do
+                sleep 1
+              done
+
+              curl -sf --cacert "$CACERT" \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json-patch+json" \
+                -X PATCH \
+                -d '[{"op":"add","path":"/metadata/labels/multus.io~1ready","value":"true"}]' \
+                "$API"
+              echo "Labeled node ${NODE_NAME} multus.io/ready=true"
+
+              while [ -S "${MULTUS_SOCKET}" ]; do
+                sleep 10
+              done
+              echo "Multus socket gone"
+              exit 1
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: MULTUS_SOCKET
+              value: /host/run/multus/multus.sock
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            - name: host-run
+              mountPath: /host/run
+              readOnly: true
+      volumes:
+        - name: host-run
+          hostPath:
+            path: /run
+            type: Directory

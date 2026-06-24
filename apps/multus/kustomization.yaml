@@ -5,6 +5,8 @@ kind: Kustomization
 
 resources:
   - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.2.0/deployments/multus-daemonset-thick.yml
+  - node-label-rbac.yaml
+  - node-labeler-daemonset.yaml
 
 patches:
   - path: patches/talos-netns.yaml
