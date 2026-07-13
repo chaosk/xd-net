@@ -25,7 +25,7 @@ variable "git_repo_credentials_secret_name" {
 
 variable "git_revision" {
   type    = string
-  default = "HEAD"
+  default = "master"
 }
 
 variable "git_image_updater_secret" {
@@ -83,6 +83,12 @@ variable "git_path_secrets" {
   default = "secrets"
 }
 
+variable "argocd_chart_version" {
+  type        = string
+  description = "argo-helm chart version (argo-cd). 10.1.3 ships Argo CD v3.4.5; keep app-manifests argocd_release in sync."
+  default     = "10.1.3"
+}
+
 variable "argocd_host" {
   type        = string
   description = "Hostname for ArgoCD (Gateway API HTTPRoute host)."
@@ -109,8 +115,8 @@ variable "argocd_sops_age_secret_name" {
 
 variable "argocd_cmp_sops_sidecar_image" {
   type        = string
-  description = "CMP sops sidecar image. Default alpine:3.20 (bootstraps sops from GitHub into /tmp). Use your own image with sops on PATH to avoid that download."
-  default     = "docker.io/library/alpine:3.20"
+  description = "CMP sops sidecar image. Default alpine:3.22 (bootstraps sops from GitHub into /tmp). Use your own image with sops on PATH to avoid that download."
+  default     = "docker.io/library/alpine:3.22"
 }
 
 variable "argocd_oidc_issuer" {
@@ -177,8 +183,8 @@ variable "gateway_class_name" {
 
 variable "envoy_gateway_version" {
   type        = string
-  description = "Envoy Gateway Helm chart version (gateway-helm + gateway-crds-helm OCI tags)."
-  default     = "v1.5.0"
+  description = "Envoy Gateway Helm chart version (gateway-helm + gateway-crds-helm OCI tags). Must match app-manifests/envoy_gateway_release (v1.8.x → Gateway API v1.5.1)."
+  default     = "v1.8.2"
 }
 
 variable "envoy_gateway_namespace" {
@@ -322,6 +328,12 @@ variable "gateway_tls_dns_names" {
   default     = ["net.ecksd.ee", "*.net.ecksd.ee"]
 }
 
+variable "cilium_version" {
+  type        = string
+  description = "Cilium Helm chart / agent version (littlejo/cilium provider)."
+  default     = "1.19.5"
+}
+
 variable "cilium_l2_loadbalancer_ip_pool" {
   type = object({
     start = string
@@ -439,6 +451,12 @@ variable "acme_cluster_issuer_name" {
   default     = "letsencrypt-prod"
 }
 
+variable "cert_manager_chart_version" {
+  type        = string
+  description = "jetstack/cert-manager Helm chart version. Keep app-manifests cert_manager_release in sync."
+  default     = "v1.21.0"
+}
+
 variable "acme_server" {
   type        = string
   description = "ACME directory URL (Let's Encrypt prod/staging)."
@@ -514,7 +532,7 @@ variable "synology_password" {
 variable "local_path_chart_version" {
   type        = string
   description = "Helm chart version for oci://ghcr.io/rancher/local-path-provisioner/charts/local-path-provisioner"
-  default     = "0.0.35"
+  default     = "0.0.36"
 }
 
 variable "local_path_storage_class_name" {
@@ -546,13 +564,13 @@ variable "intel_gpu_device_plugins_namespace" {
 variable "intel_gpu_operator_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-operator"
-  default     = "0.35.0"
+  default     = "0.36.0"
 }
 
 variable "intel_gpu_plugin_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-gpu (GpuDevicePlugin CR)"
-  default     = "0.35.0"
+  default     = "0.36.0"
 }
 
 variable "intel_gpu_plugin_resource_name" {
@@ -575,8 +593,8 @@ variable "node_feature_discovery_namespace" {
 
 variable "node_feature_discovery_chart_version" {
   type        = string
-  description = "Helm chart version for nfd/node-feature-discovery"
-  default     = "0.18.3"
+  description = "Helm chart version for nfd/node-feature-discovery (OCI: registry.k8s.io/nfd/charts)."
+  default     = "0.19.0"
 }
 
 variable "node_feature_discovery_extra_values" {
@@ -601,7 +619,7 @@ variable "cnpg_operator_namespace" {
 variable "cnpg_operator_chart_version" {
   type        = string
   description = "Helm chart version for cnpg/cloudnative-pg (https://cloudnative-pg.github.io/charts)"
-  default     = "0.28.1"
+  default     = "0.29.0"
 }
 
 variable "cnpg_operator_extra_values" {
@@ -687,7 +705,7 @@ variable "pangolin_newtsite_newt_image" {
 variable "pangolin_newtsite_newt_tag" {
   type        = string
   description = "newt container image tag."
-  default     = "1.12.5"
+  default     = "1.14.0"
 }
 
 variable "multus_enabled" {

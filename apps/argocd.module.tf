@@ -1,6 +1,7 @@
 module "argocd" {
   source = "./modules/argocd"
 
+  chart_version          = var.argocd_chart_version
   external_url           = "https://${var.argocd_host}"
   sops_age_key_file      = var.argocd_sops_age_key_file
   sops_age_secret_name   = var.argocd_sops_age_secret_name

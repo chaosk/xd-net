@@ -14,7 +14,7 @@ resource "kubernetes_namespace_v1" "node_feature_discovery" {
 resource "helm_release" "node_feature_discovery" {
   name             = "node-feature-discovery"
   chart            = "node-feature-discovery"
-  repository       = "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
+  repository       = "oci://registry.k8s.io/nfd/charts"
   version          = var.node_feature_discovery_chart_version
   namespace        = kubernetes_namespace_v1.node_feature_discovery.metadata[0].name
   create_namespace = false

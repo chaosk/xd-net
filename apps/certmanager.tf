@@ -13,9 +13,11 @@ resource "helm_release" "certmanager" {
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
+  version          = var.cert_manager_chart_version
   namespace        = "cert-manager"
   create_namespace = true
   wait             = true
+  timeout          = 600
 
   values = [
     yamlencode({

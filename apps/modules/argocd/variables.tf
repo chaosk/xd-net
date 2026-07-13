@@ -4,6 +4,12 @@ variable "namespace" {
   default     = "argocd"
 }
 
+variable "chart_version" {
+  type        = string
+  description = "argo-helm chart version (argo-cd). 10.1.3 ships Argo CD v3.4.5."
+  default     = "10.1.3"
+}
+
 variable "external_url" {
   type        = string
   description = "Public URL for Argo CD (e.g. https://argocd.example.com). Used for redirects and callback URLs."
@@ -24,8 +30,8 @@ variable "sops_age_secret_name" {
 
 variable "cmp_sops_sidecar_image" {
   type        = string
-  description = "CMP sops sidecar base image (needs /bin/sh + wget for default bootstrap). Default alpine:3.20 — first start downloads static sops to /tmp (needs egress to github.com). Override with your own image if sops is preinstalled."
-  default     = "docker.io/library/alpine:3.20"
+  description = "CMP sops sidecar base image (needs /bin/sh + wget for default bootstrap). Default alpine:3.22 — first start downloads static sops to /tmp (needs egress to github.com). Override with your own image if sops is preinstalled."
+  default     = "docker.io/library/alpine:3.22"
 }
 
 variable "oidc_issuer" {

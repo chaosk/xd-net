@@ -155,6 +155,31 @@ SCRIPT
     ] : []
   )
 
+  # Dex probes (metrics :5558) so a failed init does not stay Ready with nothing on :5556.
+  dex_helm_values = {
+    enabled = true
+    livenessProbe = {
+      enabled             = true
+      httpPath            = "/healthz/live"
+      httpPort            = "metrics"
+      httpScheme          = "HTTP"
+      initialDelaySeconds = 10
+      periodSeconds       = 10
+      failureThreshold    = 3
+      timeoutSeconds      = 1
+    }
+    readinessProbe = {
+      enabled             = true
+      httpPath            = "/healthz/ready"
+      httpPort            = "metrics"
+      httpScheme          = "HTTP"
+      initialDelaySeconds = 10
+      periodSeconds       = 10
+      failureThreshold    = 3
+      timeoutSeconds      = 1
+    }
+  }
+
   argocd_helm_values = merge(
     {
       crds = {
@@ -172,7 +197,7 @@ SCRIPT
         volumes         = local.repo_server_volumes
       }
     },
-    local.dex_authentik_enabled ? { dex = { enabled = true } } : {}
+    local.dex_authentik_enabled ? { dex = local.dex_helm_values } : {}
   )
 }
 
@@ -203,9 +228,11 @@ resource "helm_release" "argocd" {
   name             = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
+  version          = var.chart_version
   namespace        = var.namespace
   create_namespace = false
   wait             = true
+  timeout          = 900
 
   values = [yamlencode(local.argocd_helm_values)]
 
