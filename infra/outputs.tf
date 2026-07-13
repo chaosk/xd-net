@@ -37,6 +37,11 @@ output "vm_ids" {
   description = "VM IDs for each node"
 }
 
+output "proxmox_web_url" {
+  value       = var.proxmox_nginx_proxy_enabled ? "https://${local.pm_api_host}/" : null
+  description = "Proxmox UI when proxmox_nginx_proxy_enabled (use pm_api_url without :8006 for Terraform API)."
+}
+
 output "control_planes" {
   value = {
     count = length(local.control_planes)
@@ -59,18 +64,6 @@ output "workers" {
     } }
   }
   description = "Worker nodes information"
-}
-
-# ============================================
-# CONFIGURATION SUMMARIES
-# ============================================
-
-output "security_config" {
-  value = {
-    network_policies_enabled = var.enable_network_policies
-    default_deny_ingress     = var.default_deny_ingress
-  }
-  description = "Security configuration summary"
 }
 
 # ============================================

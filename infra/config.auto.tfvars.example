@@ -6,6 +6,9 @@
 
 # Proxmox
 pm_api_url  = "https://proxmox.example.com:8006/api2/json"
+# After nginx proxy + optional ACME (DNS-01): https://proxmox.example.com/api2/json
+# proxmox_nginx_proxy_enabled  = true
+# proxmox_ssh_private_key_path = "~/.ssh/id_ed25519"
 pm_user     = "root@pam"
 pm_password = "change-me"
 pm_node     = "pve"
@@ -16,6 +19,7 @@ pm_node     = "pve"
 # vm_bridge       = "vmbr1"
 # vm_storage      = "local-lvm"
 # vm_data_storage = "nvme_pool"
+# vm_disk_gb = 40                # Talos install disk (scsi0) on all nodes
 # vm_worker_data_disk_gb = 500   # xd-w-* only; control planes have no data disk
 # vm_control_plane_memory_mb = 4096   # xd-c-* (4 GiB)
 # vm_worker_memory_mb        = 12288  # xd-w-* (12 GiB)

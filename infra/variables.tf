@@ -35,6 +35,37 @@ variable "pm_timeout" {
   description = "Proxmox API client timeout in seconds. Large ISO uploads via the provider often still fail; see proxmox_manage_talos_iso."
 }
 
+variable "proxmox_nginx_proxy_enabled" {
+  type        = bool
+  default     = false
+  description = "Install nginx on the Proxmox host (HTTPS :443 → pveproxy :8006). Requires SSH; see infra/proxmox-nginx/README.md."
+}
+
+variable "proxmox_ssh_host" {
+  type        = string
+  default     = null
+  description = "SSH host for Proxmox host config. Defaults to hostname parsed from pm_api_url."
+}
+
+variable "proxmox_ssh_user" {
+  type        = string
+  default     = "root"
+  description = "SSH user on the Proxmox host."
+}
+
+variable "proxmox_ssh_port" {
+  type        = number
+  default     = 22
+  description = "SSH port on the Proxmox host."
+}
+
+variable "proxmox_ssh_private_key_path" {
+  type        = string
+  default     = null
+  description = "OpenSSH private key for root@Proxmox (required when proxmox_nginx_proxy_enabled)."
+  sensitive   = true
+}
+
 # ============================================
 # VM CONFIGURATION
 # ============================================
@@ -69,8 +100,8 @@ variable "vm_worker_memory_mb" {
 
 variable "vm_disk_gb" {
   type        = number
-  default     = 20
-  description = "Disk size in GB"
+  default     = 40
+  description = "Talos install disk size in GB (scsi0 on all nodes)"
 
   validation {
     condition     = var.vm_disk_gb >= 10
@@ -175,13 +206,13 @@ variable "domain_suffix" {
 
 variable "talos_version" {
   type        = string
-  default     = "v1.13.0"
+  default     = "v1.13.6"
   description = "Talos version"
 }
 
 variable "talos_iso_url" {
   type        = string
-  default     = "https://factory.talos.dev/image/79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167/v1.13.0/metal-amd64-secureboot.iso"
+  default     = "https://factory.talos.dev/image/79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167/v1.13.6/metal-amd64-secureboot.iso"
   description = "Talos ISO download URL"
 }
 
@@ -220,40 +251,6 @@ variable "pod_subnet" {
   type        = string
   default     = "10.244.0.0/16"
   description = "Kubernetes pod subnet"
-}
-
-# ============================================
-# SECURITY & NETWORKING
-# ============================================
-
-variable "enable_network_policies" {
-  type        = bool
-  default     = true
-  description = "Enable network policies"
-}
-
-variable "default_deny_ingress" {
-  type        = bool
-  default     = true
-  description = "Default deny ingress policy"
-}
-
-variable "default_deny_egress" {
-  type        = bool
-  default     = false
-  description = "Default deny egress policy"
-}
-
-variable "allowed_ingress_namespaces" {
-  type        = list(string)
-  default     = ["kube-system", "traefik-system"]
-  description = "Allowed ingress namespaces"
-}
-
-variable "monitoring_namespace" {
-  type        = string
-  default     = "monitoring"
-  description = "Monitoring namespace"
 }
 
 # ============================================
