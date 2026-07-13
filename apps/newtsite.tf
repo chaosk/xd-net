@@ -46,5 +46,10 @@ resource "kubernetes_manifest" "pangolin_newtsite" {
     }
   }
 
+  # Operator field manager "manager" owns spec.newt.resources after reconcile; allow tag/image updates.
+  field_manager {
+    force_conflicts = true
+  }
+
   depends_on = [helm_release.pangolin_operator]
 }

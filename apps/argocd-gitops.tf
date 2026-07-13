@@ -31,6 +31,10 @@ resource "kubernetes_manifest" "argocd_platform_secrets" {
   }
 
   depends_on = [module.argocd, kubernetes_secret_v1.argocd_repo_ssh]
+
+  field_manager {
+    force_conflicts = true
+  }
 }
 
 resource "kubernetes_manifest" "argocd_apps_applicationset" {
@@ -86,4 +90,9 @@ resource "kubernetes_manifest" "argocd_apps_applicationset" {
     module.argocd,
     kubernetes_secret_v1.argocd_repo_ssh,
   ]
+
+  # ApplicationSet controller or manual kubectl edits can own spec.generators / targetRevision.
+  field_manager {
+    force_conflicts = true
+  }
 }
