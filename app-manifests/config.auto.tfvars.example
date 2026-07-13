@@ -3,10 +3,10 @@
 # kubeconfig_path = "../infra/_out/kubeconfig"
 
 # Pin releases to match your cluster / chart choices:
-# gateway_api_release   = "v1.4.1"
+# gateway_api_release   = "v1.5.1"   # match Envoy Gateway v1.8.x compatibility matrix
 # install_gateway_api_crds = false   # true on fresh clusters; false if GW API CRDs already exist
 # install_gateway_api_experimental_crds = false  # TCPRoute v1alpha2; required for pangolin-operator
-# cert_manager_release  = "v1.17.1"
-# prometheus_operator_release = "v0.79.2"   # ServiceMonitor CRDs for monitoring/ GitOps apps
-# argocd_release        = "v2.14.0"
-# envoy_gateway_release = "v1.5.0"   # match apps/envoy_gateway_version
+# cert_manager_release  = "v1.21.0"   # match apps/ cert_manager_chart_version
+# prometheus_operator_release = "v0.92.1"   # ServiceMonitor CRDs for monitoring/ GitOps apps
+# argocd_release        = "v3.4.5"   # match apps/argocd_chart_version (argo-helm 10.1.3)
+# envoy_gateway_release = "v1.8.2"   # match apps/envoy_gateway_version

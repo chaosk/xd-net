@@ -131,4 +131,9 @@ resource "kubernetes_manifest" "cluster_manifest" {
 
   # Upstream CRD bundles may include a top-level status; kubernetes_manifest forbids it.
   manifest = { for k, v in each.value : k => v if k != "status" }
+
+  # Gateway API CRDs are often applied first via kubectl (prior apply, Envoy bundle, etc.).
+  field_manager {
+    force_conflicts = true
+  }
 }
