@@ -68,7 +68,9 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy" {
 }
 
 # L2 announce for app LoadBalancers (e.g. plex-lan) that opt in via ecksd.ee/l2-loadbalancer.
-# No node pin — externalTrafficPolicy Local limits announcement to nodes with endpoints.
+# Cilium L2 is not externalTrafficPolicy-aware — the lease holder must be the node that runs
+# the pod (https://docs.cilium.io/en/stable/network/l2-announcements/). Pin to the Intel GPU
+# worker where Plex is scheduled (apps/plex nodeSelector).
 resource "kubernetes_manifest" "cilium_l2_announcement_policy_apps" {
   count = local.cilium_l2_pool_enabled ? 1 : 0
 
@@ -85,6 +87,11 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy_apps" {
         serviceSelector = {
           matchLabels = {
             "ecksd.ee/l2-loadbalancer" = "true"
+          }
+        }
+        nodeSelector = {
+          matchLabels = {
+            "intel.feature.node.kubernetes.io/gpu" = "true"
           }
         }
       },
