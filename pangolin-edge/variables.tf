@@ -136,8 +136,8 @@ variable "generate_deploy_bundle" {
 
 variable "pangolin_image_tag" {
   type        = string
-  description = "fosrl/pangolin image tag (Community Edition)."
-  default     = "latest"
+  description = "fosrl/pangolin image tag."
+  default     = "ee-latest"
 }
 
 variable "gerbil_image_tag" {
@@ -149,13 +149,13 @@ variable "gerbil_image_tag" {
 variable "traefik_image_tag" {
   type        = string
   description = "Traefik image tag."
-  default     = "v3.6"
+  default     = "v3.7"
 }
 
 variable "traefik_badger_version" {
   type        = string
   description = "Traefik badger plugin version."
-  default     = "v1.3.1"
+  default     = "v1.4.1"
 }
 
 variable "enable_crowdsec" {
