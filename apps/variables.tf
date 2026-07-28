@@ -705,7 +705,7 @@ variable "pangolin_newtsite_newt_image" {
 variable "pangolin_newtsite_newt_tag" {
   type        = string
   description = "newt container image tag."
-  default     = "1.14.0"
+  default     = "1.15.0"
 }
 
 variable "multus_enabled" {
