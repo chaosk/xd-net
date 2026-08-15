@@ -34,7 +34,7 @@
 acme_email = "you@example.com"
 
 # Optional: ACME issuer + server
-# cert_manager_chart_version = "v1.21.0"   # match app-manifests cert_manager_release
+# cert_manager_chart_version = "v1.21.1"   # match app-manifests cert_manager_release
 # acme_cluster_issuer_name = "letsencrypt-prod"
 # acme_server = "https://acme-v02.api.letsencrypt.org/directory"
 

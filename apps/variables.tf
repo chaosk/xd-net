@@ -454,7 +454,7 @@ variable "acme_cluster_issuer_name" {
 variable "cert_manager_chart_version" {
   type        = string
   description = "jetstack/cert-manager Helm chart version. Keep app-manifests cert_manager_release in sync."
-  default     = "v1.21.0"
+  default     = "v1.21.1"
 }
 
 variable "acme_server" {
