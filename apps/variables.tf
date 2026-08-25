@@ -532,7 +532,7 @@ variable "synology_password" {
 variable "local_path_chart_version" {
   type        = string
   description = "Helm chart version for oci://ghcr.io/rancher/local-path-provisioner/charts/local-path-provisioner"
-  default     = "0.0.36"
+  default     = "0.0.37"
 }
 
 variable "local_path_storage_class_name" {
