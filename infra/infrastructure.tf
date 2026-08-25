@@ -67,7 +67,7 @@ resource "proxmox_vm_qemu" "nodes" {
   disk {
     slot    = "scsi0"
     type    = "disk"
-    storage = var.vm_storage
+    storage = lookup(var.vm_scsi0_storage, each.key, var.vm_storage)
     size    = "${var.vm_disk_gb}G"
     cache   = var.vm_disk_cache
   }

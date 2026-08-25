@@ -123,7 +123,15 @@ variable "vm_worker_data_disk_gb" {
 variable "vm_storage" {
   type        = string
   default     = "local-lvm"
-  description = "Proxmox storage pool"
+  description = "Default Proxmox storage for scsi0 (Talos install disk). Per-VM overrides: vm_scsi0_storage."
+}
+
+variable "vm_scsi0_storage" {
+  type        = map(string)
+  description = "scsi0 storage override keyed by VM name (e.g. xd-w-3). Unset names use vm_storage."
+  default = {
+    xd-w-3 = "nvme_pool"
+  }
 }
 
 variable "vm_data_storage" {

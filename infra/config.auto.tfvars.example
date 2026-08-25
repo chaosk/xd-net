@@ -18,6 +18,7 @@ pm_node     = "pve"
 # pm_timeout = 3600
 # vm_bridge       = "vmbr1"
 # vm_storage      = "local-lvm"
+# vm_scsi0_storage = { xd-w-3 = "nvme_pool" }  # OS disk moved off local-lvm
 # vm_data_storage = "nvme_pool"
 # vm_disk_gb = 40                # Talos install disk (scsi0) on all nodes
 # vm_worker_data_disk_gb = 500   # xd-w-* only; control planes have no data disk
