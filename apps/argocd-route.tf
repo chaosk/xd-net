@@ -17,7 +17,8 @@ resource "kubernetes_manifest" "argocd_route" {
         "gethomepage.dev/widget.type"  = "argocd"
         "gethomepage.dev/widget.url"   = "http://argocd-server.argocd.svc.cluster.local"
         "gethomepage.dev/widget.key"   = "{{HOMEPAGE_VAR_ARGOCD_API_KEY}}"
-        "gethomepage.dev/widget.fields" = "[\"synced\", \"outOfSync\", \"healthy\", \"degraded\"]"
+        "gethomepage.dev/widget.fields"    = "[\"synced\", \"outOfSync\", \"healthy\", \"degraded\"]"
+        "gethomepage.dev/widget.highlight" = "{\"degraded\":{\"numeric\":[{\"level\":\"danger\",\"when\":\"gt\",\"value\":0}]}}"
       }
     }
     spec = {
