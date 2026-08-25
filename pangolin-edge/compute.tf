@@ -27,7 +27,7 @@ resource "oci_core_instance" "pangolin" {
 
   source_details {
     source_type             = "image"
-    source_id               = data.oci_core_images.ubuntu.images[0].id
+    source_id               = coalesce(var.instance_image_id, data.oci_core_images.ubuntu.images[0].id)
     boot_volume_size_in_gbs = var.boot_volume_size_gbs
   }
 
@@ -41,6 +41,14 @@ resource "oci_core_instance" "pangolin" {
   create_vnic_details {
     subnet_id        = oci_core_subnet.pangolin_public.id
     assign_public_ip = false
+  }
+
+  # source_id is ForceNew. Without this, Canonical publishing a new Ubuntu
+  # 24.04 image makes the next apply destroy the VM (same reserved IP, new
+  # host keys, empty disk). Image upgrades are an explicit taint/replace.
+  # metadata.user_data is also ForceNew — cloud-init only runs on first boot.
+  lifecycle {
+    ignore_changes = [source_details, metadata]
   }
 }
 

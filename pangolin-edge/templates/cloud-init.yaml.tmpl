@@ -1,4 +1,7 @@
 #cloud-config
 hostname: ${hostname}
-package_update: true
+# vm-install.sh owns apt (Docker). First-boot package_update holds the lock for minutes.
+package_update: false
 package_upgrade: false
+bootcmd:
+  - [systemctl, stop, apt-daily.timer, apt-daily-upgrade.timer, unattended-upgrades.service]

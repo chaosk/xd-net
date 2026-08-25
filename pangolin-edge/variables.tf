@@ -52,8 +52,14 @@ variable "instance_memory_gbs" {
 
 variable "instance_os_version" {
   type        = string
-  description = "Ubuntu LTS version for the platform image lookup (OCI platform image). Pangolin supports 22.04+; default is current LTS."
+  description = "Ubuntu LTS version for the platform image lookup (OCI platform image). Pangolin supports 22.04+; default is current LTS. Used only when creating a new instance; later Canonical image publishes must not replace the VM (see compute.tf lifecycle)."
   default     = "24.04"
+}
+
+variable "instance_image_id" {
+  type        = string
+  description = "Optional OCI image OCID. Null uses the latest Ubuntu for instance_os_version + shape at create time. Changing this later is ignored (lifecycle) so applies cannot rebuild the VM."
+  default     = null
 }
 
 variable "boot_volume_size_gbs" {
@@ -173,7 +179,7 @@ variable "crowdsec_image_tag" {
 variable "traefik_crowdsec_bouncer_version" {
   type        = string
   description = "Traefik CrowdSec bouncer plugin version (github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin)."
-  default     = "v1.6.0"
+  default     = "v1.7.1"
 }
 
 variable "install_pangolin_via_ssh" {
