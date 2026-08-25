@@ -44,7 +44,7 @@ set -e
 if ! command -v sops >/dev/null 2>&1; then
   ARCH=$(uname -m)
   case "$ARCH" in aarch64|arm64) SOPS_U=arm64 ;; *) SOPS_U=amd64 ;; esac
-  wget -qO /tmp/sops "https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.$${SOPS_U}"
+  wget -qO /tmp/sops "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.$${SOPS_U}"
   chmod +x /tmp/sops
 fi
 export PATH="/tmp:$${PATH}"
