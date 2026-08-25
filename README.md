@@ -1,86 +1,72 @@
-# Talos + Proxmox + Terraform + ArgoCD (GitOps)
+# xd-net
 
-This bundle provisions a **Talos** Kubernetes cluster on **Proxmox VE**, installs **Cilium**, **Cert-Manager**, **ArgoCD** (with SOPS plugin), and **Synology CSI**.
-ArgoCD uses an **ApplicationSet** to auto-load apps from a path in your Git repo. NAS creds are stored encrypted with **SOPS**.
+Terraform for the **xd-net** Kubernetes cluster: Talos on Proxmox VE, Cilium, cert-manager, Envoy Gateway, Argo CD, Synology CSI, and the Pangolin edge on Oracle Cloud. Workloads live in **[xd-net-apps](https://github.com/chaosk/xd-net-apps)** and sync via Argo CD.
+
+API endpoint: **https://k8s.net.ecksd.ee:6443**. Argo CD UI: **https://argocd.net.ecksd.ee**. Shared Gateway TLS covers `net.ecksd.ee` / `*.net.ecksd.ee`.
 
 ## Layout
-- `infra/` → Proxmox + Talos bootstrap
-- `app-manifests/` → Cluster-wide CRDs (Gateway API*, cert-manager, Prometheus Operator CRDs, Argo CD via `kubernetes_manifest`; Envoy Gateway via `helm template | kubectl apply`) applied before `apps/`. \*Skip Gateway API if already installed (`install_gateway_api_crds = false`).
-- `apps/`  → Platform via Terraform (Cilium, Cert-Manager, ArgoCD, Synology CSI)
-- `pangolin-edge/` → Oracle Cloud edge for [Pangolin](https://pangolin.net) (VCN + VM + compose via Terraform); homelab connects via Newt (`pangolin-edge/README.md`)
-- [xd-net-apps](https://github.com/chaosk/xd-net-apps) (external) → `secrets/` (SOPS encrypted), `apps/` (homelab applications)
 
-## Quick start
-1) **Provision cluster**
+| Path | Role |
+|------|------|
+| `infra/` | Proxmox VMs + Talos bootstrap. Writes `infra/_out/kubeconfig` and `infra/_out/talosconfig`. |
+| `app-manifests/` | Cluster CRDs (Gateway API, cert-manager, Prometheus Operator, Argo CD) and Envoy Gateway CRDs. Apply before `apps/`. |
+| `apps/` | Platform: Cilium, cert-manager, Envoy Gateway, Argo CD (+ SOPS CMP), Synology CSI, Multus, CNPG operator, pangolin-operator / NewtSite. |
+| `pangolin-edge/` | OCI VCN + VM + Pangolin/Gerbil/Traefik/CrowdSec. Homelab tunnels via Newt. See `pangolin-edge/README.md`. |
+| [xd-net-apps](https://github.com/chaosk/xd-net-apps) | GitOps apps + SOPS secrets. |
+
+Local secrets and tokens live in gitignored `config.auto.tfvars` under each stack (`infra/`, `apps/`, `pangolin-edge/`).
+
+## Apply
+
+Order matters: infra → CRDs → platform → (edge / apps repo already wired).
+
 ```bash
-cd infra
-terraform init
-terraform apply
+cd infra && terraform init && terraform apply
+
+cd ../app-manifests && terraform init && terraform apply
+
+cd ../apps && terraform init && terraform apply
 ```
 
-This writes these files automatically:
-- `infra/_out/kubeconfig`
-- `infra/_out/talosconfig`
+Kubeconfig after infra:
 
-2) **Configure [xd-net-apps](https://github.com/chaosk/xd-net-apps)** (or your fork)
-- Create Age key: `age-keygen -o ~/.config/sops/age/keys.txt` (copy public key)
-- Create `secrets/synology-secret.yaml`, then encrypt:
 ```bash
-sops --encrypt --age <YOUR_AGE_PUBLIC_KEY> --in-place secrets/synology-secret.yaml
-git add secrets/synology-secret.yaml && git commit -m "synology creds" && git push
-```
-3) **Install CRDs** (once per cluster; requires kubeconfig from step 1)
-```bash
-cd ../app-manifests
-terraform init
-terraform apply
-```
-
-4) **Install platform**
-```bash
-cd ../apps
-
-# Local, non-committed settings (ACME + Vercel DNS + Synology creds)
-cp config.auto.tfvars.example config.auto.tfvars
-$EDITOR config.auto.tfvars
-
-terraform init
-terraform apply
-```
-5) **Verify**
-```bash
-export KUBECONFIG=../infra/_out/kubeconfig
+export KUBECONFIG=infra/_out/kubeconfig
 kubectl get nodes -o wide
-kubectl -n kube-system get pods -l k8s-app=cilium
-kubectl -n argocd get applicationsets,applications
-kubectl get storageclass
 ```
+
+## Argo CD / GitOps
+
+Terraform in `apps/` points Argo CD at `git@github.com:chaosk/xd-net-apps.git`:
+
+- **Application `platform-secrets`** — syncs `secrets/` with the SOPS CMP (Age key from `apps/sops.age.keys.txt`).
+- **ApplicationSet `apps`** — one Application per `apps/*` directory in xd-net-apps.
+- **Image Updater** — tag write-back for apps listed in xd-net-apps `apps/argocd-image-updater/image-updater.yaml`; git/signing/GHCR secrets are created in the `argocd` namespace.
+
+GitHub webhook URL: **https://argocd.ecksd.ee/api/webhook** (Pangolin path; secret in `apps/config.auto.tfvars`).
+
+Dex authenticates against Authentik at `https://authentik.net.ecksd.ee/application/o/argocd/`.
+
+## Networking notes
+
+- Cilium: kube-proxy replacement, L2 announcements on `ens18`, LB pool `192.168.4.201–210`. Gateway dataplane pinned to worker **`xd-w-2`** (`externalTrafficPolicy: Local`).
+- Multus + macvlan for IoT VLAN on worker `ens19` (Cilium stays on `ens18` only).
+- Synology CSI talks to `nas.net.ecksd.ee`.
 
 ## Git hooks
 
 Commits must be [GPG-signed](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work). [pre-commit](https://pre-commit.com/) runs [require-signed-commits](https://github.com/pre-commit-garage/pre-commit-metadata-hooks) on `git push` and rejects any commit missing a `gpgsig` header.
 
-One-time setup:
-
 ```bash
-brew install pre-commit   # or: pip install pre-commit
+brew install pre-commit
 pre-commit install
 git config commit.gpgsign true
 ```
 
-## Notes
-- Update **GPU PCI BDFs** in `infra/main.tf`.
-- Keep **`app-manifests`** release pins (`cert_manager_release`, `argocd_release`) at or above the versions implied by the Helm charts in `apps/` so CRDs are not older than the controllers.
+## Talos image factory
 
-## ArgoCD GitOps bootstrap
-Terraform bootstraps ArgoCD to manage the external GitOps repo [**xd-net-apps**](https://github.com/chaosk/xd-net-apps):
-- `Application` **platform-secrets** → syncs `git_path_secrets` using the **SOPS** config management plugin
-- `ApplicationSet` **apps** → auto-syncs `${git_path_apps}/*` (one Application per app directory). Argo CD Image Updater rules live in [xd-net-apps](https://github.com/chaosk/xd-net-apps) `apps/argocd-image-updater/image-updater.yaml`; Terraform provisions Image Updater git/signing/GHCR Secrets in `argocd`.
+Schematic ID: `79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167`
 
-
-## Talos Linux Image Factory
-
-Your image schematic ID is: 79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167
 ```
 customization:
     systemExtensions:
@@ -91,4 +77,6 @@ customization:
             - siderolabs/qemu-guest-agent
 ```
 
-Talos version + ISO URL/name are pinned in `infra/variables.tf`.
+Talos version and ISO URL are pinned in `infra/variables.tf`. GPU PCI BDFs for the Intel GPU worker are in `infra/main.tf`.
+
+Keep `app-manifests` release pins (`cert_manager_release`, `argocd_release`, Gateway API / Envoy Gateway) matched to the Helm charts in `apps/` so CRDs are not older than the controllers.
