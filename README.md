@@ -16,6 +16,58 @@ API endpoint: **https://k8s.net.ecksd.ee:6443**. Argo CD UI: **https://argocd.ne
 
 Local secrets and tokens live in gitignored `config.auto.tfvars` under each stack (`infra/`, `apps/`, `pangolin-edge/`).
 
+## Terraform remote state (Garage)
+
+All four roots use an S3 backend on the NAS Garage instance:
+
+| Stack | Object key |
+|-------|------------|
+| `infra/` | `xd-net/infra/terraform.tfstate` |
+| `app-manifests/` | `xd-net/app-manifests/terraform.tfstate` |
+| `apps/` | `xd-net/apps/terraform.tfstate` |
+| `pangolin-edge/` | `xd-net/pangolin-edge/terraform.tfstate` |
+
+- **Endpoint:** `https://s3.nas.net.ecksd.ee` (path-style, region `garage`)
+- **Bucket:** `terraform-state`
+- **Locking:** native S3 lockfile (`use_lockfile = true`; Terraform ≥ 1.11)
+- **Credentials:** export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` (Garage key). Do not commit them.
+
+### One-time Garage bootstrap
+
+On the NAS (Garage container):
+
+```bash
+alias garage='docker exec -it garage /garage'
+garage bucket create terraform-state
+garage key create terraform-state-key   # print Key ID + secret once; store safely
+garage bucket allow terraform-state --read --write --owner --key terraform-state-key
+```
+
+### Migrate from local state
+
+From a checkout that still has `terraform.tfstate` next to each stack (after pulling this backend config):
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_DEFAULT_REGION=garage
+
+for d in infra app-manifests apps pangolin-edge; do
+  (cd "$d" && terraform init -migrate-state)
+done
+```
+
+Confirm each migrate, then `terraform state list` against the remote backend. Keep a local copy of the old `*.tfstate` until you have verified a plan from another machine.
+
+### Fresh init (no local state)
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_DEFAULT_REGION=garage
+cd infra && terraform init
+```
+
 ## Apply
 
 Order matters: infra → CRDs → platform → (edge / apps repo already wired).
