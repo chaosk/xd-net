@@ -628,6 +628,18 @@ variable "cnpg_operator_extra_values" {
   default     = {}
 }
 
+variable "cnpg_barman_plugin_chart_version" {
+  type        = string
+  description = "Helm chart version for cnpg/plugin-barman-cloud (https://cloudnative-pg.github.io/charts)"
+  default     = "0.7.1"
+}
+
+variable "cnpg_barman_plugin_extra_values" {
+  type        = map(any)
+  description = "Extra Helm values merged into plugin-barman-cloud"
+  default     = {}
+}
+
 # pangolin-operator (https://github.com/home-operations/pangolin-operator)
 variable "pangolin_operator_enabled" {
   type        = bool
