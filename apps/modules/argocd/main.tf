@@ -37,17 +37,10 @@ EOT
   # CMP v2: repo-server talks to argocd-cmp-server over a Unix socket (…/plugins/sops.sock).
   # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/config-management-plugins/#sidecar-plugin
   #
-  # Default: Alpine + wget static sops into /tmp (writable as uid 999; no apk/root). Needs egress
-  # to github.com. Override cmp_sops_sidecar_image to an image with sops preinstalled to skip download.
+  # Default image (ghcr.io/chaosk/argocd-cmp-sops) ships sops on PATH — no runtime GitHub egress.
   cmp_sops_sidecar_bootstrap = <<-SCRIPT
 set -e
-if ! command -v sops >/dev/null 2>&1; then
-  ARCH=$(uname -m)
-  case "$ARCH" in aarch64|arm64) SOPS_U=arm64 ;; *) SOPS_U=amd64 ;; esac
-  wget -qO /tmp/sops "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.$${SOPS_U}"
-  chmod +x /tmp/sops
-fi
-export PATH="/tmp:$${PATH}"
+command -v sops >/dev/null
 exec /var/run/argocd/argocd-cmp-server
 SCRIPT
 

@@ -115,8 +115,8 @@ variable "argocd_sops_age_secret_name" {
 
 variable "argocd_cmp_sops_sidecar_image" {
   type        = string
-  description = "CMP sops sidecar image. Default alpine:3.22 (bootstraps sops from GitHub into /tmp). Use your own image with sops on PATH to avoid that download."
-  default     = "docker.io/library/alpine:3.22"
+  description = "CMP sops sidecar image (needs /bin/sh and sops on PATH). Default ghcr.io/chaosk/argocd-cmp-sops:3.13.3 from images/argocd-cmp-sops."
+  default     = "ghcr.io/chaosk/argocd-cmp-sops:3.13.3"
 }
 
 variable "argocd_oidc_issuer" {
