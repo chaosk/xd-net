@@ -4,6 +4,9 @@ resource "kubernetes_namespace_v1" "node_feature_discovery" {
   metadata {
     name = var.node_feature_discovery_namespace
     labels = {
+      # Must stay privileged (PSS baseline forbids hostPath). nfd-worker mounts
+      # host /boot, /sys, /lib, /usr/lib, /etc/os-release, /proc/swaps, and
+      # features.d via hostPath (chart v0.19.0). See XD-45.
       "pod-security.kubernetes.io/enforce" = "privileged"
       "pod-security.kubernetes.io/audit"   = "privileged"
       "pod-security.kubernetes.io/warn"    = "privileged"

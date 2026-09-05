@@ -2,6 +2,10 @@ resource "kubernetes_namespace_v1" "intel_device_plugins" {
   metadata {
     name = var.intel_gpu_device_plugins_namespace
     labels = {
+      # Must stay privileged (PSS baseline forbids hostPath; also SELinux type).
+      # intel-gpu-plugin DaemonSet hostPaths: /dev/dri, /sys/class/drm,
+      # /var/lib/kubelet/device-plugins, /var/run/cdi. Upstream INSTALL.md
+      # requires privileged PSA labels. See XD-45.
       "pod-security.kubernetes.io/enforce" = "privileged"
       "pod-security.kubernetes.io/audit"   = "privileged"
       "pod-security.kubernetes.io/warn"    = "privileged"

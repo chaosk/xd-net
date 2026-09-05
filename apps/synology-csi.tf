@@ -2,7 +2,9 @@ resource "kubernetes_namespace_v1" "synology_csi" {
   metadata {
     name = "synology-csi"
     labels = {
-      # Exempt from Pod Security Standards - CSI drivers need privileged access
+      # Must stay privileged (PSS baseline forbids hostPath + privileged + hostNetwork).
+      # synology-csi node DaemonSet: privileged containers, hostNetwork, hostPath
+      # mounts (/var/lib/kubelet, /dev, host root for chroot). See XD-45.
       "pod-security.kubernetes.io/enforce" = "privileged"
       "pod-security.kubernetes.io/audit"   = "privileged"
       "pod-security.kubernetes.io/warn"    = "privileged"
