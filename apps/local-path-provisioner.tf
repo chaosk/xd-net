@@ -14,6 +14,9 @@ resource "kubernetes_namespace_v1" "local_path_storage" {
   metadata {
     name = "local-path-storage"
     labels = {
+      # Must stay privileged (PSS baseline forbids hostPath). The provisioner
+      # Deployment itself is fine, but PVC helper pods inject a hostPath volume
+      # for the node data dir (/var/mnt/local-path-data). See XD-45.
       "pod-security.kubernetes.io/enforce" = "privileged"
       "pod-security.kubernetes.io/audit"   = "privileged"
       "pod-security.kubernetes.io/warn"    = "privileged"
