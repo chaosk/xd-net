@@ -25,7 +25,7 @@ variable "install_gateway_api_experimental_crds" {
 variable "cert_manager_release" {
   type        = string
   description = "cert-manager release tag (must match apps/ cert_manager_chart_version)."
-  default     = "v1.21.1"
+  default     = "v1.21.2"
 }
 
 variable "prometheus_operator_release" {
