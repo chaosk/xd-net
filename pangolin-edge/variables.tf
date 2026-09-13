@@ -155,7 +155,7 @@ variable "gerbil_image_tag" {
 variable "traefik_image_tag" {
   type        = string
   description = "Traefik image tag."
-  default     = "v3.7"
+  default     = "v3.7.12"
 }
 
 variable "traefik_badger_version" {
@@ -173,7 +173,7 @@ variable "enable_crowdsec" {
 variable "crowdsec_image_tag" {
   type        = string
   description = "CrowdSec Docker image tag."
-  default     = "latest-debian"
+  default     = "v1.7.8-debian"
 }
 
 variable "traefik_crowdsec_bouncer_version" {
