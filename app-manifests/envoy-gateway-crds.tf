@@ -2,6 +2,10 @@
 # helm_release (rendered manifest exceeds the 1 MiB Helm release Secret limit).
 # Upstream recommends: helm template | kubectl apply --server-side
 # https://gateway.envoyproxy.io/latest/install/install-helm/#installing-crds-separately
+#
+# Updating `input` in place does not re-run when=create. A version bump must be applied with
+# helm template | kubectl apply (see upgrade procedure); do not triggers_replace this resource
+# while the destroy provisioner still deletes CRDs.
 
 resource "terraform_data" "envoy_gateway_crds" {
   input = {

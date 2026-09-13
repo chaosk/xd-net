@@ -56,6 +56,8 @@ synology_password = "change-me"
 
 # pangolin-operator (OCI edge must expose Integration API — pangolin-edge terraform output integration_api_url)
 # pangolin_operator_enabled  = true
+# pangolin_operator_chart_repository = "oci://ghcr.io/chaosk/charts"
+# pangolin_operator_chart_version    = "0.2.0"
 # pangolin_operator_api_url  = "https://pangolin-api.ecksd.ee"
 # pangolin_operator_endpoint = "https://pangolin.ecksd.ee"
 # pangolin_operator_org_id   = "<org-id>"
@@ -97,7 +99,7 @@ synology_password = "change-me"
 # gateway_class_name = "eg"
 # gateway_http_to_https_redirect = true
 # gateway_http_redirect_status_code = 301
-# envoy_gateway_version = "v1.8.4"   # match app-manifests/envoy_gateway_release + Gateway API v1.5.1
+# envoy_gateway_version = "v1.9.1"   # match app-manifests/envoy_gateway_release + Gateway API v1.6.2
 # envoy_gateway_controller_memory_request = "256Mi"
 # envoy_gateway_controller_memory_limit   = "512Mi"
 # envoy_proxy_memory_request = "128Mi"

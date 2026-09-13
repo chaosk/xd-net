@@ -6,8 +6,8 @@ variable "kubeconfig_path" {
 
 variable "gateway_api_release" {
   type        = string
-  description = "Gateway API release tag (standard channel). Must match Envoy Gateway compatibility matrix (v1.8.x → v1.5.1)."
-  default     = "v1.5.1"
+  description = "Gateway API release tag (standard channel). Must match Envoy Gateway compatibility matrix (v1.9.x → v1.6.2)."
+  default     = "v1.6.2"
 }
 
 variable "install_gateway_api_crds" {
@@ -18,8 +18,8 @@ variable "install_gateway_api_crds" {
 
 variable "install_gateway_api_experimental_crds" {
   type        = bool
-  description = "Apply Gateway API experimental TCPRoute CRD (v1alpha2). Required by pangolin-operator."
-  default     = true
+  description = "Apply Gateway API experimental TCPRoute CRD (serves deprecated v1alpha2). Leave false: pangolin-operator 0.2.0 and Envoy Gateway 1.9 use standard TCPRoute v1."
+  default     = false
 }
 
 variable "cert_manager_release" {
@@ -43,5 +43,5 @@ variable "argocd_release" {
 variable "envoy_gateway_release" {
   type        = string
   description = "Envoy Gateway Helm chart version for gateway-crds-helm (Envoy Gateway CRDs only, not Gateway API). Must match apps/envoy_gateway_version."
-  default     = "v1.8.4"
+  default     = "v1.9.1"
 }

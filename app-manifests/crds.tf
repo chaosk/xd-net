@@ -4,7 +4,8 @@ data "http" "gateway_api_standard" {
   url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/${var.gateway_api_release}/standard-install.yaml"
 }
 
-# pangolin-operator watches gateway.networking.k8s.io/v1alpha2 TCPRoute (experimental channel).
+# Optional experimental TCPRoute overlay (v1 + v1alpha2 served). Not used: operator 0.2.0
+# watches TCPRoute v1 from standard-install.
 data "http" "gateway_api_experimental_tcp_route" {
   count = var.install_gateway_api_experimental_crds ? 1 : 0
 
@@ -71,6 +72,14 @@ locals {
     if local.gateway_standard_body != null && body == local.gateway_standard_body
   ])
 
+  # v1.6+ standard-install includes TCPRoute; drop it when the experimental CRD is enabled so
+  # for_each keys do not collide and v1alpha2 stays served.
+  gateway_standard_docs = [
+    for doc in local.gateway_docs :
+    doc
+    if !(var.install_gateway_api_experimental_crds && try(doc.metadata.name, "") == "tcproutes.gateway.networking.k8s.io")
+  ]
+
   gateway_experimental_docs = flatten([
     for body, docs in local.split_yaml_documents :
     docs
@@ -95,7 +104,7 @@ locals {
   ]
 
   gateway_manifests = {
-    for i, doc in concat(local.gateway_docs, local.gateway_experimental_docs) :
+    for i, doc in concat(local.gateway_standard_docs, local.gateway_experimental_docs) :
     "gateway-api/${try(doc.metadata.name, i)}" => doc
     if try(doc.kind, "") == "CustomResourceDefinition" && try(doc.metadata.name, null) != null
   }

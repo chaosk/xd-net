@@ -1,6 +1,7 @@
-# home-operations/pangolin-operator — manages Pangolin sites, newt, and PublicResource CRs.
+# chaosk/pangolin-operator (TCPRoute v1) — manages Pangolin sites, newt, and PublicResource CRs.
 # Requires Integration API on the OCI edge (pangolin-edge: enable_integration_api = true).
-# Requires Gateway API experimental TCPRoute CRD (app-manifests: install_gateway_api_experimental_crds).
+# Apply Gateway API v1.6.2 standard CRDs (app-manifests) before this Helm release.
+# Do not delete the NewtSite while the operator is running (finalizer can delete the Pangolin site).
 
 locals {
   # Operator client appends /v1/...; strip a trailing /v1 if tfvars copied from older docs.
@@ -29,7 +30,7 @@ resource "helm_release" "pangolin_operator" {
 
   name             = "pangolin-operator"
   chart            = "pangolin-operator"
-  repository       = "oci://ghcr.io/home-operations/charts"
+  repository       = var.pangolin_operator_chart_repository
   version          = var.pangolin_operator_chart_version
   namespace        = kubernetes_namespace_v1.pangolin_operator[0].metadata[0].name
   create_namespace = false
