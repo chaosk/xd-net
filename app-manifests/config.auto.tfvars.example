@@ -7,6 +7,6 @@
 # install_gateway_api_crds = false   # true on fresh clusters; false if GW API CRDs already exist
 # install_gateway_api_experimental_crds = false  # TCPRoute v1alpha2; required for pangolin-operator
 # cert_manager_release  = "v1.21.2"   # match apps/ cert_manager_chart_version
-# prometheus_operator_release = "v0.93.1"   # ServiceMonitor CRDs for monitoring/ GitOps apps
+# prometheus_operator_release = "v0.94.0"   # ServiceMonitor CRDs for monitoring/ GitOps apps
 # argocd_release        = "v3.5.2"   # match apps/argocd_chart_version (argo-helm 10.9.0)
 # envoy_gateway_release = "v1.8.4"   # match apps/envoy_gateway_version
