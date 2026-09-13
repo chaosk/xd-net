@@ -37,7 +37,7 @@ variable "prometheus_operator_release" {
 variable "argocd_release" {
   type        = string
   description = "Argo CD release tag; CRDs are taken from manifests/install.yaml for this tag."
-  default     = "v3.5.1"
+  default     = "v3.5.2"
 }
 
 variable "envoy_gateway_release" {
