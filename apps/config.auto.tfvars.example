@@ -64,7 +64,7 @@ synology_password = "change-me"
 # pangolin_newtsite_display_name = "xd-net k8s cluster"
 
 # ArgoCD host override (optional)
-# argocd_chart_version = "10.4.3"   # Argo CD v3.5.2 — match app-manifests argocd_release
+# argocd_chart_version = "10.9.0"   # Argo CD v3.5.2 — match app-manifests argocd_release
 # argocd_host = "argocd.net.ecksd.ee"
 
 # Argo CD Git webhook via Pangolin (argocd-webhook-route.tf). DNS → Pangolin edge, not homelab Gateway.
