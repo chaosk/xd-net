@@ -132,7 +132,7 @@ synology_password = "change-me"
 
 # CloudNativePG (PostgreSQL operator): namespace / chart pin / extra Helm values
 # cnpg_operator_namespace        = "cnpg-system"
-# cnpg_operator_chart_version    = "0.28.3"
+# cnpg_operator_chart_version    = "0.29.0"
 # cnpg_operator_extra_values     = { config = { clusterWide = true } }
 # cnpg_barman_plugin_chart_version = "0.8.0"
 # cnpg_barman_plugin_extra_values  = {}
