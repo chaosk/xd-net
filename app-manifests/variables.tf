@@ -43,5 +43,5 @@ variable "argocd_release" {
 variable "envoy_gateway_release" {
   type        = string
   description = "Envoy Gateway Helm chart version for gateway-crds-helm (Envoy Gateway CRDs only, not Gateway API). Must match apps/envoy_gateway_version."
-  default     = "v1.8.3"
+  default     = "v1.8.4"
 }
