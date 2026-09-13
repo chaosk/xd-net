@@ -631,7 +631,7 @@ variable "cnpg_operator_extra_values" {
 variable "cnpg_barman_plugin_chart_version" {
   type        = string
   description = "Helm chart version for cnpg/plugin-barman-cloud (https://cloudnative-pg.github.io/charts)"
-  default     = "0.7.1"
+  default     = "0.8.0"
 }
 
 variable "cnpg_barman_plugin_extra_values" {
