@@ -18,7 +18,7 @@ variable "install_gateway_api_crds" {
 
 variable "install_gateway_api_experimental_crds" {
   type        = bool
-  description = "Apply Gateway API experimental TCPRoute CRD (v1alpha2). Required by pangolin-operator."
+  description = "Apply Gateway API experimental TCPRoute CRD (v1alpha2). Needed only for upstream pangolin-operator ≤0.1.x on Gateway API 1.5. chaosk/pangolin-operator ≥0.2 watches TCPRoute v1 (Gateway API ≥1.6 standard) and does not need this."
   default     = true
 }
 

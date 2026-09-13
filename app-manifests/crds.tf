@@ -4,7 +4,8 @@ data "http" "gateway_api_standard" {
   url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/${var.gateway_api_release}/standard-install.yaml"
 }
 
-# pangolin-operator watches gateway.networking.k8s.io/v1alpha2 TCPRoute (experimental channel).
+# Optional: TCPRoute v1alpha2 for Gateway API 1.5 + upstream pangolin-operator ≤0.1.x.
+# chaosk fork ≥0.2 watches TCPRoute v1; on Gateway API ≥1.6 standard this experimental install is unused.
 data "http" "gateway_api_experimental_tcp_route" {
   count = var.install_gateway_api_experimental_crds ? 1 : 0
 

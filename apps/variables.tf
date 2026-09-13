@@ -640,7 +640,7 @@ variable "cnpg_barman_plugin_extra_values" {
   default     = {}
 }
 
-# pangolin-operator (https://github.com/home-operations/pangolin-operator)
+# pangolin-operator (https://github.com/chaosk/pangolin-operator — TCPRoute v1 fork)
 variable "pangolin_operator_enabled" {
   type        = bool
   description = "Install pangolin-operator Helm chart (requires OCI edge Integration API + org API key)."
@@ -653,10 +653,16 @@ variable "pangolin_operator_namespace" {
   default     = "pangolin-operator"
 }
 
+variable "pangolin_operator_chart_repository" {
+  type        = string
+  description = "OCI Helm repository for pangolin-operator (chaosk fork publishes to ghcr.io/chaosk/charts)."
+  default     = "oci://ghcr.io/chaosk/charts"
+}
+
 variable "pangolin_operator_chart_version" {
   type        = string
-  description = "Helm chart version (oci://ghcr.io/home-operations/charts/pangolin-operator)."
-  default     = "0.1.4"
+  description = "Helm chart version (oci://ghcr.io/chaosk/charts/pangolin-operator). 0.2.0+ watches TCPRoute v1."
+  default     = "0.2.0"
 }
 
 variable "pangolin_operator_api_url" {

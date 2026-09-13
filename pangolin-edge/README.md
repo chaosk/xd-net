@@ -2,7 +2,7 @@
 
 Terraform for the Pangolin edge VM in **eu-frankfurt-1**: VCN, subnet, security list, Ubuntu A1 instance, reserved public IP, Vercel DNS, and Docker Compose (Pangolin / Gerbil / Traefik / CrowdSec) over SSH into `/opt/pangolin`.
 
-Dashboard: **https://pangolin.ecksd.ee**. Integration API: **https://pangolin-api.ecksd.ee** (used by [pangolin-operator](https://github.com/home-operations/pangolin-operator) in the xd-net cluster). Homelab site **`xd-net`** tunnels via Newt (`apps/pangolin-operator.tf`, `apps/newtsite.tf`).
+Dashboard: **https://pangolin.ecksd.ee**. Integration API: **https://pangolin-api.ecksd.ee** (used by [pangolin-operator](https://github.com/chaosk/pangolin-operator) in the xd-net cluster). Homelab site **`xd-net`** tunnels via Newt (`apps/pangolin-operator.tf`, `apps/newtsite.tf`).
 
 ```mermaid
 flowchart LR
