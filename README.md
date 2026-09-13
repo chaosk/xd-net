@@ -16,6 +16,93 @@ API endpoint: **https://k8s.net.ecksd.ee:6443**. Argo CD UI: **https://argocd.ne
 
 Local secrets and tokens live in gitignored `config.auto.tfvars` under each stack (`infra/`, `apps/`, `pangolin-edge/`).
 
+## Dependency graphs
+
+### Stack apply order
+
+Terraform stacks are separate roots. Apply left-to-right; `pangolin-edge/` can run in parallel with cluster bootstrap once you have DNS/API credentials.
+
+```mermaid
+flowchart LR
+  Infra[infra/]
+  CRDs[app-manifests/]
+  Platform[apps/]
+  Edge[pangolin-edge/]
+  AppsRepo[xd-net-apps]
+
+  Infra --> CRDs --> Platform
+  Edge -.->|Newt + Integration API| Platform
+  Platform -->|Argo CD ApplicationSet| AppsRepo
+```
+
+### Platform (`apps/`)
+
+Logical dependencies from Terraform `depends_on` (and CRDs installed by `app-manifests/`). Leaf components with only a namespace edge are omitted.
+
+```mermaid
+flowchart TB
+  subgraph crds [app-manifests CRDs]
+    GWAPI[Gateway API]
+    CMCRD[cert-manager CRDs]
+    EGCRD[Envoy Gateway CRDs]
+    ArgoCRD[Argo CD CRDs]
+  end
+
+  Cilium[Cilium]
+  Hubble[Hubble]
+  LB[Cilium LB IPAM + L2]
+  Multus[Multus]
+  CM[cert-manager]
+  Vercel[Vercel DNS01 webhook]
+  ACME[ACME ClusterIssuer]
+  EG[Envoy Gateway]
+  Proxy[EnvoyProxy config]
+  Cert[Gateway TLS Certificate]
+  GW[shared Gateway]
+  Redirect[HTTP→HTTPS redirect]
+  CTP[ClientTrafficPolicy]
+  Argo[Argo CD + SOPS CMP]
+  Repo[repo SSH secret]
+  GitOps[platform-secrets + apps ApplicationSet]
+  Routes[Argo CD HTTPRoutes]
+  CNPG[CloudNative-PG]
+  Barman[Barman Cloud plugin]
+  SynCSI[Synology CSI]
+  SynSC[Synology StorageClass]
+  PangOp[pangolin-operator]
+  Newt[NewtSite]
+  NFD[Node Feature Discovery]
+  GPU[Intel GPU device plugin]
+
+  Cilium --> Hubble
+  Cilium --> LB
+  Cilium --> Multus
+  Cilium --> EG
+
+  CMCRD --> CM
+  CM --> Vercel --> ACME
+  CM --> Cert
+  ACME --> Cert
+  CM --> Barman
+
+  EGCRD --> EG
+  GWAPI --> EG
+  EG --> Proxy --> GW
+  Cert --> GW
+  GW --> Redirect
+  GW --> CTP
+  GW --> Routes
+
+  ArgoCRD --> Argo
+  Argo --> Repo --> GitOps
+  Argo --> Routes
+
+  CNPG --> Barman
+  SynCSI --> SynSC
+  PangOp --> Newt
+  NFD --> GPU
+```
+
 ## Apply
 
 Order matters: infra → CRDs → platform → (edge / apps repo already wired).
