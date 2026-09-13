@@ -77,6 +77,6 @@ customization:
             - siderolabs/qemu-guest-agent
 ```
 
-Talos version and ISO URL are pinned in `infra/variables.tf`. GPU PCI BDFs for the Intel GPU worker are in `infra/main.tf`.
+Talos installer/ISO (`talos_version`) and the machine-config contract (`talos_machine_config_version`) are pinned in `infra/variables.tf`. GPU PCI BDFs for the Intel GPU worker are in `infra/main.tf`.
 
 Keep `app-manifests` release pins (`cert_manager_release`, `argocd_release`, Gateway API / Envoy Gateway) matched to the Helm charts in `apps/` so CRDs are not older than the controllers.

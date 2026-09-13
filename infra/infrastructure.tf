@@ -177,22 +177,24 @@ resource "local_file" "worker_hostname_cfg" {
 data "talos_machine_configuration" "cp" {
   for_each = { for n in local.control_planes : n.name => n }
 
-  cluster_name     = var.cluster_name
-  cluster_endpoint = var.cluster_endpoint
-  machine_type     = "controlplane"
-  machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = var.talos_version
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = var.cluster_endpoint
+  machine_type       = "controlplane"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  talos_version      = var.talos_machine_config_version
+  kubernetes_version = var.kubernetes_version
 }
 
 # Worker machine configurations
 data "talos_machine_configuration" "worker" {
   for_each = { for n in local.workers : n.name => n }
 
-  cluster_name     = var.cluster_name
-  cluster_endpoint = var.cluster_endpoint
-  machine_type     = "worker"
-  machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = var.talos_version
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = var.cluster_endpoint
+  machine_type       = "worker"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  talos_version      = var.talos_machine_config_version
+  kubernetes_version = var.kubernetes_version
 }
 
 # Merged worker config (base + patches) for maintenance-mode recovery:
@@ -200,11 +202,12 @@ data "talos_machine_configuration" "worker" {
 data "talos_machine_configuration" "worker_full" {
   for_each = { for n in local.workers : n.name => n }
 
-  cluster_name     = var.cluster_name
-  cluster_endpoint = var.cluster_endpoint
-  machine_type     = "worker"
-  machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = var.talos_version
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = var.cluster_endpoint
+  machine_type       = "worker"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  talos_version      = var.talos_machine_config_version
+  kubernetes_version = var.kubernetes_version
   config_patches = concat([
     local_file.worker_cfg[each.key].content,
     local_file.worker_hostname_cfg[each.key].content,

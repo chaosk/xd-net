@@ -214,19 +214,31 @@ variable "domain_suffix" {
 
 variable "talos_version" {
   type        = string
+  default     = "v1.14.0"
+  description = "Installed Talos version (Factory installer image and ISO). Not the machine-config contract — see talos_machine_config_version."
+}
+
+variable "talos_machine_config_version" {
+  type        = string
   default     = "v1.13.9"
-  description = "Talos version"
+  description = "Talos version contract for data.talos_machine_configuration. Stay on 1.13 until terraform-provider-talos 0.12 (0.11 SDK is 1.13)."
+}
+
+variable "kubernetes_version" {
+  type        = string
+  default     = "1.36.3"
+  description = "Kubernetes version baked into generated machine config. Pin so apply does not follow Talos' default (1.14 ships 1.37)."
 }
 
 variable "talos_iso_url" {
   type        = string
-  default     = "https://factory.talos.dev/image/79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167/v1.13.9/metal-amd64-secureboot.iso"
+  default     = "https://factory.talos.dev/image/79d80db11c7f0e8bc14aaf940e3b5dbde519e5c9e746b5d0751dd0487a2d5167/v1.14.0/metal-amd64-secureboot.iso"
   description = "Talos ISO download URL"
 }
 
 variable "talos_iso_name" {
   type        = string
-  default     = "talos-1.13.9-metal-amd64-secureboot.iso"
+  default     = "talos-1.14.0-metal-amd64-secureboot.iso"
   description = "Talos ISO filename"
 }
 
