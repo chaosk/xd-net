@@ -64,6 +64,7 @@ synology_password = "change-me"
 # pangolin_operator_api_key  = "<integration-api-key>"
 # pangolin_newtsite_name     = "xd-net"
 # pangolin_newtsite_display_name = "xd-net k8s cluster"
+# pangolin_newtsite_newt_tag = "1.17.0"
 
 # ArgoCD host override (optional)
 # argocd_chart_version = "10.9.1"   # Argo CD v3.5.3 — match app-manifests argocd_release
