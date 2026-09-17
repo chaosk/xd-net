@@ -331,7 +331,7 @@ variable "gateway_tls_dns_names" {
 variable "cilium_version" {
   type        = string
   description = "Cilium Helm chart / agent version (littlejo/cilium provider)."
-  default     = "1.20.1"
+  default     = "1.20.2"
 }
 
 variable "cilium_l2_loadbalancer_ip_pool" {
