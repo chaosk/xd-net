@@ -85,8 +85,8 @@ variable "git_path_secrets" {
 
 variable "argocd_chart_version" {
   type        = string
-  description = "argo-helm chart version (argo-cd). 10.9.0 ships Argo CD v3.5.2; keep app-manifests argocd_release in sync."
-  default     = "10.9.0"
+  description = "argo-helm chart version (argo-cd). 10.9.1 ships Argo CD v3.5.3; keep app-manifests argocd_release in sync."
+  default     = "10.9.1"
 }
 
 variable "argocd_host" {

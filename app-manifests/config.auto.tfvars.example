@@ -8,5 +8,5 @@
 # install_gateway_api_experimental_crds = false  # TCPRoute v1alpha2 overlay; not needed with operator 0.2.0
 # cert_manager_release  = "v1.21.2"   # match apps/ cert_manager_chart_version
 # prometheus_operator_release = "v0.94.0"   # ServiceMonitor CRDs for monitoring/ GitOps apps
-# argocd_release        = "v3.5.2"   # match apps/argocd_chart_version (argo-helm 10.9.0)
+# argocd_release        = "v3.5.3"   # match apps/argocd_chart_version (argo-helm 10.9.1)
 # envoy_gateway_release = "v1.9.1"   # match apps/envoy_gateway_version
