@@ -31,7 +31,7 @@ pm_node     = "pve"
 # cluster_endpoint = "https://k8s.net.ecksd.ee:6443"
 
 # Talos pins (normally leave defaults from `infra/variables.tf`)
-# talos_version                = "v1.14.0"  # installer image + ISO
+# talos_version                = "v1.14.1"  # installer image + ISO
 # talos_machine_config_version = "v1.13.9"  # gen-config contract until provider 0.12
 # kubernetes_version           = "1.36.3"
 # talos_iso_url  = "https://factory.talos.dev/image/<schematic>/<version>/metal-amd64-secureboot.iso"
