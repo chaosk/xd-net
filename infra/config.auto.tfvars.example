@@ -33,7 +33,7 @@ pm_node     = "pve"
 # Talos pins (normally leave defaults from `infra/variables.tf`)
 # talos_version                = "v1.14.1"  # installer image + ISO
 # talos_machine_config_version = "v1.13.9"  # gen-config contract until provider 0.12
-# kubernetes_version           = "1.36.3"
+# kubernetes_version           = "1.36.4"
 # talos_iso_url  = "https://factory.talos.dev/image/<schematic>/<version>/metal-amd64-secureboot.iso"
 # talos_iso_name = "talos-<version>-metal-amd64-secureboot.iso"
 

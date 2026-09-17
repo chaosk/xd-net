@@ -226,7 +226,7 @@ variable "talos_machine_config_version" {
 
 variable "kubernetes_version" {
   type        = string
-  default     = "1.36.3"
+  default     = "1.36.4"
   description = "Kubernetes version baked into generated machine config. Pin so apply does not follow Talos' default (1.14 ships 1.37)."
 }
 
