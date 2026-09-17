@@ -10,7 +10,7 @@ API endpoint: **https://k8s.net.ecksd.ee:6443**. Argo CD UI: **https://argocd.ne
 |------|------|
 | `infra/` | Proxmox VMs + Talos bootstrap. Writes `infra/_out/kubeconfig` and `infra/_out/talosconfig`. |
 | `app-manifests/` | Cluster CRDs (Gateway API, cert-manager, Prometheus Operator, Argo CD) and Envoy Gateway CRDs. Apply before `apps/`. |
-| `apps/` | Platform: Cilium, cert-manager, Envoy Gateway, Argo CD (+ SOPS CMP), Synology CSI, Multus, CNPG operator, pangolin-operator / NewtSite. |
+| `apps/` | Platform: Cilium, cert-manager, Envoy Gateway, Argo CD (+ SOPS CMP), Synology CSI, Multus, CNPG operator, Spegel, pangolin-operator / NewtSite. |
 | `pangolin-edge/` | OCI VCN + VM + Pangolin/Gerbil/Traefik/CrowdSec. Homelab tunnels via Newt. See `pangolin-edge/README.md`. |
 | [xd-net-apps](https://github.com/chaosk/xd-net-apps) | GitOps apps + SOPS secrets. |
 
@@ -51,6 +51,7 @@ Dex authenticates against Authentik at `https://authentik.net.ecksd.ee/applicati
 
 - Cilium: kube-proxy replacement, L2 announcements on `ens18`, LB pool `192.168.4.201–210`. Gateway dataplane pinned to worker **`xd-w-2`** (`externalTrafficPolicy: Local`).
 - Multus + macvlan for IoT VLAN on worker `ens19` (Cilium stays on `ens18` only).
+- Spegel mirrors OCI pulls between nodes (needs `discard_unpacked_layers = false` on Talos and a reboot).
 - Synology CSI talks to `nas.net.ecksd.ee`.
 
 ## Git hooks

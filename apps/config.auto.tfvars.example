@@ -66,6 +66,10 @@ synology_password = "change-me"
 # pangolin_newtsite_display_name = "xd-net k8s cluster"
 # pangolin_newtsite_newt_tag = "1.17.0"
 
+# Spegel (P2P registry mirror). Talos CRI patch is infra/patches/spegel-cri.yaml; reboot nodes after first apply.
+# spegel_enabled        = true
+# spegel_chart_version  = "0.7.4"
+
 # ArgoCD host override (optional)
 # argocd_chart_version = "10.9.1"   # Argo CD v3.5.3 — match app-manifests argocd_release
 # argocd_host = "argocd.net.ecksd.ee"

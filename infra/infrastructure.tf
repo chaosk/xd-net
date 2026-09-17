@@ -12,6 +12,9 @@ locals {
   # searchDomains.disableDefault belongs on ResolverConfig, not machine.network.searchDomains.
   talos_resolver_search_domains_patch = file("${path.module}/patches/resolver-search-domains.yaml")
   talos_kubelet_node_ip_patch = file("${path.module}/patches/kubelet-node-ip.yaml")
+  # Spegel: keep unpacked CRI layers. Requires a node reboot after first apply.
+  # https://docs.siderolabs.com/kubernetes-guides/advanced-guides/spegel
+  talos_spegel_cri_patch = file("${path.module}/patches/spegel-cri.yaml")
 
   control_plane_names = { for n in local.control_planes : n.name => true }
 
@@ -214,6 +217,7 @@ data "talos_machine_configuration" "worker_full" {
     local.talos_local_path_user_volume_patch,
     local.talos_resolver_search_domains_patch,
     local.talos_kubelet_node_ip_patch,
+    local.talos_spegel_cri_patch,
   ], var.worker_iot_vlan_id != null ? [templatefile("${path.module}/patches/worker-iot-nic.yaml.tmpl", {
     iot_macaddr = each.value.iot_macaddr
   })] : [])
@@ -246,6 +250,7 @@ resource "talos_machine_configuration_apply" "cp" {
     local_file.cp_hostname_cfg[each.key].content,
     local.talos_resolver_search_domains_patch,
     local.talos_kubelet_node_ip_patch,
+    local.talos_spegel_cri_patch,
   ]
 
   depends_on = [proxmox_vm_qemu.nodes]
@@ -265,6 +270,7 @@ resource "talos_machine_configuration_apply" "worker" {
     local.talos_local_path_user_volume_patch,
     local.talos_resolver_search_domains_patch,
     local.talos_kubelet_node_ip_patch,
+    local.talos_spegel_cri_patch,
   ], var.worker_iot_vlan_id != null ? [templatefile("${path.module}/patches/worker-iot-nic.yaml.tmpl", {
     iot_macaddr = each.value.iot_macaddr
   })] : [])

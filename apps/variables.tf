@@ -726,6 +726,36 @@ variable "pangolin_newtsite_newt_tag" {
   default     = "1.17.0"
 }
 
+variable "spegel_enabled" {
+  type        = bool
+  description = "Install Spegel (P2P OCI mirror). Needs infra/patches/spegel-cri.yaml and a node reboot."
+  default     = true
+}
+
+variable "spegel_namespace" {
+  type        = string
+  description = "Namespace for the Spegel DaemonSet."
+  default     = "spegel"
+}
+
+variable "spegel_chart_repository" {
+  type        = string
+  description = "OCI Helm repository for Spegel (chart name spegel)."
+  default     = "oci://ghcr.io/spegel-org/helm-charts"
+}
+
+variable "spegel_chart_version" {
+  type        = string
+  description = "Spegel Helm chart version."
+  default     = "0.7.4"
+}
+
+variable "spegel_extra_values" {
+  type        = map(any)
+  description = "Extra Helm values merged into Spegel."
+  default     = {}
+}
+
 variable "multus_enabled" {
   type        = bool
   description = "Install Multus CNI for secondary pod interfaces (macvlan). Sets Cilium cni.exclusive=false."
