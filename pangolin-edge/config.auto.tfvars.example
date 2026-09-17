@@ -27,6 +27,10 @@ letsencrypt_email       = "you@example.com"
 # CrowdSec in front of Traefik (access logs → LAPI, bouncer on :80/:443)
 # enable_crowdsec = true
 
+# Image pins (defaults in variables.tf). Do not use ee-latest / latest.
+# pangolin_image_tag = "ee-1.23.0"
+# gerbil_image_tag   = "1.5.1"
+
 # install_pangolin_via_ssh = true
 # Defaults: A1.Flex 4 OCPU / 24 GB RAM (full Always Free A1 pool for a single VM)
 # instance_shape      = "VM.Standard.A1.Flex"

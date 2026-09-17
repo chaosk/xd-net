@@ -142,26 +142,26 @@ variable "generate_deploy_bundle" {
 
 variable "pangolin_image_tag" {
   type        = string
-  description = "fosrl/pangolin image tag."
-  default     = "ee-latest"
+  description = "fosrl/pangolin image tag. Use ee-<version> (not ee-latest) so deploys stay reproducible."
+  default     = "ee-1.23.0"
 }
 
 variable "gerbil_image_tag" {
   type        = string
-  description = "fosrl/gerbil image tag."
-  default     = "latest"
+  description = "fosrl/gerbil image tag. Pin a release (not latest)."
+  default     = "1.5.1"
 }
 
 variable "traefik_image_tag" {
   type        = string
   description = "Traefik image tag."
-  default     = "v3.7.12"
+  default     = "v3.7.13"
 }
 
 variable "traefik_badger_version" {
   type        = string
   description = "Traefik badger plugin version."
-  default     = "v1.4.1"
+  default     = "v1.7.0"
 }
 
 variable "enable_crowdsec" {
@@ -173,7 +173,7 @@ variable "enable_crowdsec" {
 variable "crowdsec_image_tag" {
   type        = string
   description = "CrowdSec Docker image tag."
-  default     = "v1.7.8-debian"
+  default     = "v1.8.1-debian"
 }
 
 variable "traefik_crowdsec_bouncer_version" {
