@@ -34,6 +34,25 @@ resource "helm_release" "spegel" {
       spegel = {
         containerdRegistryConfigPath = "/etc/cri/conf.d/hosts"
       }
+      # Grafana sidecar watches all namespaces (label grafana_dashboard=1).
+      # Folder annotation key must be grafana_folder (kiwigrid default).
+      grafanaDashboard = {
+        enabled = true
+        mode    = "Sidecar"
+        labels = {
+          grafana_dashboard = "1"
+        }
+        annotations = {
+          grafana_folder = "Platform"
+        }
+      }
+      serviceMonitor = {
+        enabled  = true
+        interval = "30s"
+        labels = {
+          release = "kube-prometheus-stack"
+        }
+      }
     }),
     yamlencode(var.spegel_extra_values),
   ]
