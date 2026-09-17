@@ -34,18 +34,8 @@ resource "helm_release" "spegel" {
       spegel = {
         containerdRegistryConfigPath = "/etc/cri/conf.d/hosts"
       }
-      # Grafana sidecar watches all namespaces (label grafana_dashboard=1).
-      # Folder annotation key must be grafana_folder (kiwigrid default).
-      grafanaDashboard = {
-        enabled = true
-        mode    = "Sidecar"
-        labels = {
-          grafana_dashboard = "1"
-        }
-        annotations = {
-          grafana_folder = "Platform"
-        }
-      }
+      # Dashboard JSON stays in xd-net-apps: chart embeds grafana.com ${DS_PROMETHEUS}
+      # placeholders that break Grafana sidecar provisioning.
       serviceMonitor = {
         enabled  = true
         interval = "30s"
