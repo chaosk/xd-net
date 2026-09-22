@@ -564,13 +564,13 @@ variable "intel_gpu_device_plugins_namespace" {
 variable "intel_gpu_operator_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-operator"
-  default     = "0.36.0"
+  default     = "0.37.0"
 }
 
 variable "intel_gpu_plugin_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-gpu (GpuDevicePlugin CR)"
-  default     = "0.36.0"
+  default     = "0.37.0"
 }
 
 variable "intel_gpu_plugin_resource_name" {
