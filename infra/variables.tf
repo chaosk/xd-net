@@ -220,8 +220,8 @@ variable "talos_version" {
 
 variable "talos_machine_config_version" {
   type        = string
-  default     = "v1.13.9"
-  description = "Talos version contract for data.talos_machine_configuration. Stay on 1.13 until terraform-provider-talos 0.12 (0.11 SDK is 1.13)."
+  default     = "v1.14.1"
+  description = "Talos version contract for data.talos_machine_configuration. Keep in sync with talos_version now that terraform-provider-talos 0.12 ships the 1.14 SDK."
 }
 
 variable "kubernetes_version" {
