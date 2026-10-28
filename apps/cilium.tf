@@ -20,6 +20,9 @@ locals {
     # Required for CiliumLoadBalancerIPPool + CiliumL2AnnouncementPolicy to take effect:
     # LB IPAM is default (defaultLBServiceIPAM=lbipam); L2 ARP/NDP for those IPs is opt-in.
     "l2announcements.enabled=true",
+    # Honor Service trafficDistribution (PreferSameNode). Spegel >= 0.8.0 dropped its
+    # hostPort and relies on this to keep image pulls on the node's own Spegel pod.
+    "loadBalancer.serviceTopology=true",
     # Allow Multus alongside Cilium when multus_enabled (see multus.tf).
     var.multus_enabled ? "cni.exclusive=false" : "cni.exclusive=true",
     # Prometheus metrics — https://docs.cilium.io/en/stable/observability/metrics/
