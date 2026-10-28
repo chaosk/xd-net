@@ -22,6 +22,10 @@ locals {
     { for n in local.control_planes : n.name => var.vm_control_plane_memory_mb },
     { for n in local.workers : n.name => var.vm_worker_memory_mb },
   )
+  node_disk_gb = merge(
+    { for n in local.control_planes : n.name => var.vm_control_plane_disk_gb },
+    { for n in local.workers : n.name => var.vm_worker_disk_gb },
+  )
 }
 
 resource "proxmox_storage_iso" "talos_iso" {
@@ -91,7 +95,7 @@ resource "proxmox_vm_qemu" "nodes" {
     slot    = "scsi0"
     type    = "disk"
     storage = lookup(var.vm_scsi0_storage, each.key, var.vm_storage)
-    size    = "${var.vm_disk_gb}G"
+    size    = "${local.node_disk_gb[each.key]}G"
     cache   = var.vm_disk_cache
   }
 

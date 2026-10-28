@@ -98,13 +98,24 @@ variable "vm_worker_memory_mb" {
   }
 }
 
-variable "vm_disk_gb" {
+variable "vm_control_plane_disk_gb" {
   type        = number
-  default     = 40
-  description = "Talos install disk size in GB (scsi0 on all nodes)"
+  default     = 20
+  description = "Talos install disk size in GB (scsi0) for control plane VMs (xd-c-*)."
 
   validation {
-    condition     = var.vm_disk_gb >= 10
+    condition     = var.vm_control_plane_disk_gb >= 10
+    error_message = "Disk size must be at least 10GB."
+  }
+}
+
+variable "vm_worker_disk_gb" {
+  type        = number
+  default     = 80
+  description = "Talos install disk size in GB (scsi0) for worker VMs (xd-w-*). Images (Spegel keeps unpacked layers) live here."
+
+  validation {
+    condition     = var.vm_worker_disk_gb >= 10
     error_message = "Disk size must be at least 10GB."
   }
 }
