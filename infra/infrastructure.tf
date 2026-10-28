@@ -75,6 +75,12 @@ resource "proxmox_vm_qemu" "nodes" {
     version = "v2.0"
   }
 
+  lifecycle {
+    # Telmate/proxmox never reads tpmstate0 back into state (refresh leaves
+    # tpm_state = []), so every plan would replace the VM. Set on create only.
+    ignore_changes = [tpm_state]
+  }
+
   cpu {
     cores   = var.vm_cores
     sockets = 1
