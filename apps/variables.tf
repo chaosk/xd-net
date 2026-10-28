@@ -564,13 +564,13 @@ variable "intel_gpu_device_plugins_namespace" {
 variable "intel_gpu_operator_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-operator"
-  default     = "0.37.0"
+  default     = "0.37.1"
 }
 
 variable "intel_gpu_plugin_chart_version" {
   type        = string
   description = "Helm chart version for intel-device-plugins-gpu (GpuDevicePlugin CR)"
-  default     = "0.37.0"
+  default     = "0.37.1"
 }
 
 variable "intel_gpu_plugin_resource_name" {
@@ -594,7 +594,7 @@ variable "node_feature_discovery_namespace" {
 variable "node_feature_discovery_chart_version" {
   type        = string
   description = "Helm chart version for nfd/node-feature-discovery (OCI: registry.k8s.io/nfd/charts)."
-  default     = "0.19.0"
+  default     = "0.20.1"
 }
 
 variable "node_feature_discovery_extra_values" {

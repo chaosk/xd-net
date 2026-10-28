@@ -134,7 +134,7 @@ synology_password = "change-me"
 # local_path_storage_class_name = "local-path"
 
 # Intel GPU plugin (GpuDevicePlugin sharedDevNum — default 4 in variables.tf; override here)
-# node_feature_discovery_chart_version = "0.19.0"
+# node_feature_discovery_chart_version = "0.20.1"
 # intel_gpu_plugin_shared_dev_num = 8
 
 # CloudNativePG (PostgreSQL operator): namespace / chart pin / extra Helm values
