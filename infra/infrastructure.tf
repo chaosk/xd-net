@@ -63,8 +63,15 @@ resource "proxmox_vm_qemu" "nodes" {
     pre_enrolled_keys = false
   }
 
+  # vTPM for Talos disk encryption sealed to Secure Boot state. Same replacement
+  # caveat: existing VMs get it via `qm set <vmid> --tpmstate0 <storage>:1,version=v2.0`.
+  tpm_state {
+    storage = var.vm_storage
+    version = "v2.0"
+  }
+
   lifecycle {
-    ignore_changes = [efidisk]
+    ignore_changes = [efidisk, tpm_state]
   }
 
   cpu {
