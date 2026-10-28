@@ -24,7 +24,15 @@ SSH_OPTS=()
 [[ -n "${SSH_IDENTITY}" ]] && SSH_OPTS+=(-i "${SSH_IDENTITY}")
 
 ssh "${SSH_OPTS[@]}" "${REMOTE}" "sudo mkdir -p ${INSTALL_DIR} && sudo chown -R \$(whoami):\$(whoami) ${INSTALL_DIR}"
-rsync -avz --delete -e "ssh ${SSH_OPTS[*]}" "${DEPLOY}/" "${REMOTE}:${INSTALL_DIR}/"
+# CrowdSec seeds /etc/crowdsec into the bind mount on first start; --delete would wipe it.
+# Same for ACME state, Pangolin DB, and Traefik access logs.
+rsync -avz --delete \
+  --exclude 'config/crowdsec/' \
+  --exclude 'config/letsencrypt/acme.json' \
+  --exclude 'config/db/' \
+  --exclude 'config/traefik/logs/' \
+  -e "ssh ${SSH_OPTS[*]}" \
+  "${DEPLOY}/" "${REMOTE}:${INSTALL_DIR}/"
 
 ssh "${SSH_OPTS[@]}" "${REMOTE}" bash -s -- "${INSTALL_DIR}" <<'REMOTE'
 set -euo pipefail
