@@ -128,12 +128,18 @@ variable "vm_storage" {
 
 variable "vm_scsi0_storage" {
   type        = map(string)
-  description = "scsi0 (plus efidisk/tpm_state) storage override keyed by VM name. Unset names use vm_storage."
+  description = "scsi0 storage override keyed by VM name. Unset names use vm_storage."
   default = {
     xd-w-1 = "nvme_pool"
     xd-w-2 = "nvme_pool"
     xd-w-3 = "nvme_pool"
   }
+}
+
+variable "vm_firmware_storage" {
+  type        = string
+  default     = "nvme_pool"
+  description = "Proxmox storage for every VM's efidisk (UEFI vars / Secure Boot keys) and tpm_state."
 }
 
 variable "vm_data_storage" {

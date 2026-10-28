@@ -60,14 +60,14 @@ resource "proxmox_vm_qemu" "nodes" {
   #   qm set <vmid> --efidisk0 <storage>:1,efitype=4m,pre-enrolled-keys=0 \
   #                 --tpmstate0 <storage>:1,version=v2.0
   efidisk {
-    storage           = lookup(var.vm_scsi0_storage, each.key, var.vm_storage)
+    storage           = var.vm_firmware_storage
     efitype           = "4m"
     pre_enrolled_keys = false
   }
 
   # vTPM for Talos disk encryption sealed to Secure Boot state.
   tpm_state {
-    storage = lookup(var.vm_scsi0_storage, each.key, var.vm_storage)
+    storage = var.vm_firmware_storage
     version = "v2.0"
   }
 
