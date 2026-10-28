@@ -51,6 +51,22 @@ resource "proxmox_vm_qemu" "nodes" {
   agent     = var.enable_qemu_guest_agent ? 1 : 0
   skip_ipv6 = true
 
+  # Persistent UEFI vars. Without it Proxmox uses a temporary efivars store, so the
+  # Secure Boot keys Talos enrolls from the ISO are lost on the next VM restart.
+  # No pre-enrolled (Microsoft) keys: firmware must start in setup mode for Talos
+  # auto-enrollment. The provider can only add an efidisk by replacing the VM (which
+  # wipes scsi0/scsi1), so changes are ignored below: existing VMs get it via
+  # `qm set <vmid> --efidisk0 <storage>:1,efitype=4m,pre-enrolled-keys=0`.
+  efidisk {
+    storage           = var.vm_storage
+    efitype           = "4m"
+    pre_enrolled_keys = false
+  }
+
+  lifecycle {
+    ignore_changes = [efidisk]
+  }
+
   cpu {
     cores   = var.vm_cores
     sockets = 1
