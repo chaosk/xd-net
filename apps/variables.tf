@@ -747,7 +747,7 @@ variable "spegel_chart_repository" {
 variable "spegel_chart_version" {
   type        = string
   description = "Spegel Helm chart version."
-  default     = "0.7.4"
+  default     = "0.8.0"
 }
 
 variable "spegel_extra_values" {
