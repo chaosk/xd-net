@@ -186,8 +186,8 @@ variable "vm_cpu_limit" {
 
 variable "vm_memory_ballooning" {
   type        = bool
-  default     = true
-  description = "Enable memory ballooning on worker VMs only (control planes always use balloon=0)."
+  default     = false
+  description = "Enable memory ballooning on worker VMs only (control planes always use balloon=0). Off: workers run with balloon=0."
 }
 
 # Network
