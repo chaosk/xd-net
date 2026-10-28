@@ -140,7 +140,9 @@ resource "proxmox_vm_qemu" "nodes" {
       mapping_id    = "arc_a310"
       pcie          = false
       primary_gpu   = false
-      rombar        = false
+      # Expose the Arc option ROM. If i915 logs "LMEM not initialized by firmware",
+      # the card needs a cold host power cycle; a VM stop/start is not enough.
+      rombar        = true
       vendor_id     = "8086"
       device_id     = "56a6"
       sub_vendor_id = "4019"
