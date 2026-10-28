@@ -54,24 +54,21 @@ resource "proxmox_vm_qemu" "nodes" {
   # Persistent UEFI vars. Without it Proxmox uses a temporary efivars store, so the
   # Secure Boot keys Talos enrolls from the ISO are lost on the next VM restart.
   # No pre-enrolled (Microsoft) keys: firmware must start in setup mode for Talos
-  # auto-enrollment. The provider can only add an efidisk by replacing the VM (which
-  # wipes scsi0/scsi1), so changes are ignored below: existing VMs get it via
-  # `qm set <vmid> --efidisk0 <storage>:1,efitype=4m,pre-enrolled-keys=0`.
+  # auto-enrollment.
+  # The provider adds efidisk/tpm_state only by replacing the VM (wiping scsi0/scsi1).
+  # On an existing VM, add them first, then `terraform apply -refresh-only`:
+  #   qm set <vmid> --efidisk0 <storage>:1,efitype=4m,pre-enrolled-keys=0 \
+  #                 --tpmstate0 <storage>:1,version=v2.0
   efidisk {
     storage           = var.vm_storage
     efitype           = "4m"
     pre_enrolled_keys = false
   }
 
-  # vTPM for Talos disk encryption sealed to Secure Boot state. Same replacement
-  # caveat: existing VMs get it via `qm set <vmid> --tpmstate0 <storage>:1,version=v2.0`.
+  # vTPM for Talos disk encryption sealed to Secure Boot state.
   tpm_state {
     storage = var.vm_storage
     version = "v2.0"
-  }
-
-  lifecycle {
-    ignore_changes = [efidisk, tpm_state]
   }
 
   cpu {
