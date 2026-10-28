@@ -6,8 +6,8 @@ variable "kubeconfig_path" {
 
 variable "gateway_api_release" {
   type        = string
-  description = "Gateway API release tag (standard channel). Must match Envoy Gateway compatibility matrix (v1.9.x → v1.6.2)."
-  default     = "v1.6.2"
+  description = "Gateway API release tag (standard channel). Must match Envoy Gateway compatibility matrix (v1.9.x → v1.6.3)."
+  default     = "v1.6.3"
 }
 
 variable "install_gateway_api_crds" {
@@ -25,7 +25,7 @@ variable "install_gateway_api_experimental_crds" {
 variable "cert_manager_release" {
   type        = string
   description = "cert-manager release tag (must match apps/ cert_manager_chart_version)."
-  default     = "v1.21.2"
+  default     = "v1.21.3"
 }
 
 variable "prometheus_operator_release" {
@@ -43,5 +43,5 @@ variable "argocd_release" {
 variable "envoy_gateway_release" {
   type        = string
   description = "Envoy Gateway Helm chart version for gateway-crds-helm (Envoy Gateway CRDs only, not Gateway API). Must match apps/envoy_gateway_version."
-  default     = "v1.9.1"
+  default     = "v1.9.3"
 }

@@ -1,6 +1,6 @@
 # chaosk/pangolin-operator (TCPRoute v1) — manages Pangolin sites, newt, and PublicResource CRs.
 # Requires Integration API on the OCI edge (pangolin-edge: enable_integration_api = true).
-# Apply Gateway API v1.6.2 standard CRDs (app-manifests) before this Helm release.
+# Apply Gateway API v1.6.3 standard CRDs (app-manifests) before this Helm release.
 # Do not delete the NewtSite while the operator is running (finalizer can delete the Pangolin site).
 
 locals {
