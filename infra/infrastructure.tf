@@ -49,7 +49,7 @@ resource "proxmox_vm_qemu" "nodes" {
   description = "Talos K8s ${each.value.gpu ? "GPU " : ""}node - ${var.cluster_name}"
 
   # Hardware
-  boot      = "order=scsi0;ide0" # disk first after install; ISO fallback for empty disk / recovery
+  boot      = "order=scsi0;ide0;net0" # disk first after install; ISO fallback for empty disk / recovery; net0 last
   bios      = "ovmf"
   scsihw    = "virtio-scsi-pci"
   agent     = var.enable_qemu_guest_agent ? 1 : 0
@@ -66,6 +66,7 @@ resource "proxmox_vm_qemu" "nodes" {
   efidisk {
     storage           = var.vm_firmware_storage
     efitype           = "4m"
+    format            = "raw"
     pre_enrolled_keys = false
   }
 
@@ -149,10 +150,10 @@ resource "proxmox_vm_qemu" "nodes" {
       # Expose the Arc option ROM. If i915 logs "LMEM not initialized by firmware",
       # the card needs a cold host power cycle; a VM stop/start is not enough.
       rombar        = true
-      vendor_id     = "8086"
-      device_id     = "56a6"
-      sub_vendor_id = "4019"
-      sub_device_id = "172f"
+      vendor_id     = "0x8086"
+      device_id     = "0x56a6"
+      sub_vendor_id = "0x4019"
+      sub_device_id = "0x172f"
     }
   }
 
