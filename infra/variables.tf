@@ -128,8 +128,10 @@ variable "vm_storage" {
 
 variable "vm_scsi0_storage" {
   type        = map(string)
-  description = "scsi0 storage override keyed by VM name (e.g. xd-w-3). Unset names use vm_storage."
+  description = "scsi0 (plus efidisk/tpm_state) storage override keyed by VM name. Unset names use vm_storage."
   default = {
+    xd-w-1 = "nvme_pool"
+    xd-w-2 = "nvme_pool"
     xd-w-3 = "nvme_pool"
   }
 }
