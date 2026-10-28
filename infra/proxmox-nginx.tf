@@ -12,6 +12,7 @@ locals {
   proxmox_nginx_install_script = file("${path.module}/proxmox-nginx/install.sh")
   proxmox_nginx_conf_template  = file("${path.module}/proxmox-nginx/proxmox.conf.tmpl")
   proxmox_nginx_systemd_dropin = file("${path.module}/proxmox-nginx/nginx.service.d-override.conf")
+  proxmox_nginx_reload_hook    = file("${path.module}/proxmox-nginx/reload-on-cert-renewal.sh")
 }
 
 resource "null_resource" "proxmox_nginx_proxy" {
@@ -23,6 +24,7 @@ resource "null_resource" "proxmox_nginx_proxy" {
     install_sh = sha256(local.proxmox_nginx_install_script)
     conf_tmpl  = sha256(local.proxmox_nginx_conf_template)
     systemd    = sha256(local.proxmox_nginx_systemd_dropin)
+    reload     = sha256(local.proxmox_nginx_reload_hook)
   }
 
   connection {
@@ -51,6 +53,11 @@ resource "null_resource" "proxmox_nginx_proxy" {
   provisioner "file" {
     content     = local.proxmox_nginx_systemd_dropin
     destination = "/tmp/proxmox-nginx/nginx.service.d-override.conf"
+  }
+
+  provisioner "file" {
+    content     = local.proxmox_nginx_reload_hook
+    destination = "/tmp/proxmox-nginx/reload-on-cert-renewal.sh"
   }
 
   provisioner "remote-exec" {

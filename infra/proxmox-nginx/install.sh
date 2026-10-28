@@ -50,4 +50,12 @@ systemctl daemon-reload
 systemctl enable nginx
 systemctl restart nginx
 
+# Reload nginx when pve-daily-update renews the ACME cert. Cron, not a systemd path
+# unit: /etc/pve is pmxcfs (FUSE), where inotify does not fire.
+install -m 0755 "${INSTALL_DIR}/reload-on-cert-renewal.sh" /usr/local/sbin/proxmox-nginx-reload-on-cert-renewal
+echo '17 * * * * root /usr/local/sbin/proxmox-nginx-reload-on-cert-renewal' > /etc/cron.d/proxmox-nginx-cert-reload
+chmod 0644 /etc/cron.d/proxmox-nginx-cert-reload
+# Record the cert nginx just loaded so the hook only reloads after a later renewal.
+/usr/local/sbin/proxmox-nginx-reload-on-cert-renewal
+
 echo "nginx proxy OK — https://$(hostname -f 2>/dev/null || hostname)/ (cert: ${SSL_CERT})"

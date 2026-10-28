@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Reload nginx after Proxmox ACME renewal updates pveproxy-ssl.pem.
-# Install once on the host (optional): see README.md.
+# Installed by install.sh as /usr/local/sbin/proxmox-nginx-reload-on-cert-renewal (hourly cron).
 set -euo pipefail
 
 STAMP="/var/lib/proxmox-nginx-pveproxy-cert.stamp"

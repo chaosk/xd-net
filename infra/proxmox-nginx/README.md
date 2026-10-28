@@ -18,7 +18,7 @@ Order of operations:
 
 Browser UI: **https://pve.net.ecksd.ee/**. Terraform still talks to pveproxy on `:8006` via `pm_api_url` in `infra/config.auto.tfvars`.
 
-`reload-on-cert-renewal.sh` is installed via cron (hourly) so nginx reloads when `pve-daily-update` renews the ACME cert.
+`install.sh` installs `reload-on-cert-renewal.sh` as `/usr/local/sbin/proxmox-nginx-reload-on-cert-renewal` with an hourly cron job (`/etc/cron.d/proxmox-nginx-cert-reload`), so nginx reloads after `pve-daily-update` renews the ACME cert. Cron rather than a systemd path unit: `/etc/pve` is pmxcfs, where inotify does not fire.
 
 ## Terraform (`infra/config.auto.tfvars`)
 
