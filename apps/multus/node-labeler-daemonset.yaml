@@ -29,7 +29,7 @@ spec:
           effect: NoExecute
       initContainers:
         - name: clear-multus-node-label
-          image: docker.io/library/alpine:3.22
+          image: docker.io/library/alpine:3.24
           command:
             - /bin/sh
             - -ec
@@ -60,7 +60,7 @@ spec:
               memory: 64Mi
       containers:
         - name: labeler
-          image: docker.io/library/alpine:3.22
+          image: docker.io/library/alpine:3.24
           command:
             - /bin/sh
             - -ec

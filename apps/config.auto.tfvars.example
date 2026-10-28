@@ -83,8 +83,8 @@ synology_password = "change-me"
 # SOPS (platform-secrets): Age keys file on disk — never commit it (see apps/.gitignore). Paths are relative to cwd when you run terraform apply (use apps/ as cwd).
 # argocd_sops_age_key_file = "./sops.age.keys.txt"
 # argocd_sops_age_secret_name = "argo-sops-age"
-# CMP sops sidecar (default alpine + one-time sops download to /tmp; needs github.com egress). Keys only on cmp-sops.
-# argocd_cmp_sops_sidecar_image = "docker.io/library/alpine:3.22"
+# CMP sops sidecar (default GHCR image from images/argocd-cmp-sops: Alpine + sops on PATH). Keys only on cmp-sops.
+# argocd_cmp_sops_sidecar_image = "ghcr.io/chaosk/argocd-cmp-sops:3.13.3"
 # If argocd already existed without Terraform managing the namespace, import once before apply:
 # terraform import 'module.argocd.kubernetes_namespace_v1.argocd' argocd
 

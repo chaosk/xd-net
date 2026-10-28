@@ -1,6 +1,6 @@
 # Minimal Argo CD CMP sidecar base: Alpine + static sops on PATH.
 # argocd-cmp-server is mounted at runtime from the repo-server volume.
-FROM docker.io/library/alpine:3.22
+FROM docker.io/library/alpine:3.24
 
 ARG SOPS_VERSION=3.13.3
 ARG TARGETARCH
