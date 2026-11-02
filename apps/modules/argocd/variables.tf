@@ -78,3 +78,36 @@ variable "github_webhook_secret" {
   sensitive   = true
 }
 
+
+variable "github_app_id" {
+  type        = string
+  description = "GitHub App ID for Argo CD notifications (service.github). Empty disables GitHub deployment reporting."
+  default     = ""
+}
+
+variable "github_app_installation_id" {
+  type        = string
+  description = "Installation ID of the GitHub App on the target account/repos."
+  default     = ""
+}
+
+variable "github_app_private_key_file" {
+  type        = string
+  description = "Path to the GitHub App private key (.pem). Stored in argocd-notifications-secret as github-privateKey."
+  default     = ""
+}
+
+variable "github_deployments" {
+  type = map(object({
+    repo_url        = string
+    image           = string
+    environment     = optional(string, "production")
+    environment_url = optional(string, "")
+  }))
+  description = <<-EOT
+    Argo CD applications that report GitHub deployments, keyed by Application name. The deployed ref is the
+    image tag of `image` (repo tags must match image tags). Selected via the ecksd.ee/app label set by the
+    apps ApplicationSet.
+  EOT
+  default     = {}
+}

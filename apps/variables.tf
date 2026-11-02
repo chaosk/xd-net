@@ -163,6 +163,41 @@ variable "argocd_github_webhook_secret" {
   sensitive   = true
 }
 
+variable "argocd_github_app_id" {
+  type        = string
+  description = "GitHub App ID for Argo CD notifications (GitHub deployments). Empty disables deployment reporting."
+  default     = ""
+}
+
+variable "argocd_github_app_installation_id" {
+  type        = string
+  description = "Installation ID of that GitHub App (Settings → Applications → Configure → number in the URL)."
+  default     = ""
+}
+
+variable "argocd_github_app_private_key_file" {
+  type        = string
+  description = "Path to the GitHub App private key (.pem); never commit it. Relative paths resolve from the terraform cwd (apps/)."
+  default     = ""
+}
+
+variable "argocd_github_deployments" {
+  type = map(object({
+    repo_url        = string
+    image           = string
+    environment     = optional(string, "production")
+    environment_url = optional(string, "")
+  }))
+  description = "Argo CD Applications that report GitHub deployments (key = Application name). Deployment ref = image tag, so repo tags must match image tags."
+  default = {
+    marian = {
+      repo_url        = "https://github.com/chaosk/marian"
+      image           = "ghcr.io/chaosk/marian"
+      environment_url = "https://marian.ecksd.ee"
+    }
+  }
+}
+
 variable "gateway_namespace" {
   type        = string
   description = "Namespace for the shared Gateway API Gateway."

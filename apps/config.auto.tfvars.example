@@ -79,6 +79,11 @@ synology_password = "change-me"
 # argocd_webhook_host = "argocd.ecksd.ee"
 # GitHub → xd-net-apps → Webhooks: payload https://<argocd_webhook_host>/api/webhook, same secret below.
 # argocd_github_webhook_secret = "<openssl rand -hex 32>"
+# GitHub deployments for apps in argocd_github_deployments (default: marian). GitHub App needs
+# Deployments: read & write on those repos. Key file stays local (see apps/.gitignore).
+# argocd_github_app_id               = "123456"
+# argocd_github_app_installation_id  = "12345678"
+# argocd_github_app_private_key_file = "./argocd-github-app.pem"
 
 # SOPS (platform-secrets): Age keys file on disk — never commit it (see apps/.gitignore). Paths are relative to cwd when you run terraform apply (use apps/ as cwd).
 # argocd_sops_age_key_file = "./sops.age.keys.txt"

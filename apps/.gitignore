@@ -8,3 +8,6 @@ terraform.tfvars
 .terraform/
 *.tfstate
 *.tfstate.*
+
+# GitHub App private key for Argo CD notifications (see argocd_github_app_private_key_file)
+*.pem

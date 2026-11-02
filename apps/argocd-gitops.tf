@@ -62,6 +62,10 @@ resource "kubernetes_manifest" "argocd_apps_applicationset" {
       template = {
         metadata = {
           name = "{{path.basename}}"
+          # Selector for Argo CD notification subscriptions (e.g. GitHub deployments).
+          labels = {
+            "ecksd.ee/app" = "{{path.basename}}"
+          }
         }
         spec = {
           project = "default"

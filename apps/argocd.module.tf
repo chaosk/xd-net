@@ -12,7 +12,12 @@ module "argocd" {
   oidc_client_secret    = var.argocd_oidc_client_secret
   oidc_display_name     = var.argocd_oidc_display_name
   oidc_requested_scopes = var.argocd_oidc_requested_scopes
-  rbac_policy_csv         = var.argocd_rbac_policy_csv
-  github_webhook_secret   = var.argocd_github_webhook_secret
+  rbac_policy_csv       = var.argocd_rbac_policy_csv
+  github_webhook_secret = var.argocd_github_webhook_secret
+
+  github_app_id               = var.argocd_github_app_id
+  github_app_installation_id  = var.argocd_github_app_installation_id
+  github_app_private_key_file = var.argocd_github_app_private_key_file
+  github_deployments          = var.argocd_github_deployments
 }
 

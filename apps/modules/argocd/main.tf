@@ -173,6 +173,101 @@ SCRIPT
     }
   }
 
+  # GitHub deployments via Argo CD notifications (service.github; GitHub App auth only).
+  # https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/github/
+  github_notifications_enabled = (
+    trimspace(var.github_app_id) != "" &&
+    trimspace(var.github_app_installation_id) != "" &&
+    trimspace(var.github_app_private_key_file) != "" &&
+    length(var.github_deployments) > 0
+  )
+
+  # GitHub deployment state per Argo CD event. oncePer: one report per xd-net-apps revision.
+  github_deployment_events = {
+    deployed = {
+      state = "success"
+      when  = "app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'"
+    }
+    sync-failed = {
+      state = "failure"
+      when  = "app.status.operationState != nil and app.status.operationState.phase in ['Error', 'Failed']"
+    }
+    health-degraded = {
+      state = "error"
+      when  = "app.status.health.status == 'Degraded'"
+    }
+  }
+
+  # Running image tag, e.g. ghcr.io/chaosk/marian:0.7.6 -> 0.7.6. Used as the deployment ref,
+  # so the repo's git tags must match its image tags.
+  github_deployment_tag = {
+    for app, d in var.github_deployments :
+    app => "{{ range .app.status.summary.images }}{{ if hasPrefix \"${d.image}:\" . }}{{ trimPrefix \"${d.image}:\" . }}{{ end }}{{ end }}"
+  }
+
+  github_notification_templates = merge([
+    for app, d in var.github_deployments : {
+      for event, e in local.github_deployment_events :
+      "template.github-${event}-${app}" => yamlencode({
+        message = "${app} ${event}"
+        github = {
+          repoURLPath  = d.repo_url
+          revisionPath = local.github_deployment_tag[app]
+          deployment = merge(
+            {
+              state       = e.state
+              environment = d.environment
+              logURL      = "{{.context.argocdUrl}}/applications/argocd/{{.app.metadata.name}}?operation=true"
+              reference   = local.github_deployment_tag[app]
+              # Tags are not on the default branch; autoMerge would fail. No CI checks gate deploys.
+              autoMerge            = false
+              requiredContexts     = []
+              transientEnvironment = false
+            },
+            d.environment_url != "" ? { environmentURL = d.environment_url } : {}
+          )
+        }
+      })
+    }
+  ]...)
+
+  github_notification_triggers = merge([
+    for app, d in var.github_deployments : {
+      for event, e in local.github_deployment_events :
+      "trigger.on-github-${event}-${app}" => yamlencode([{
+        when    = e.when
+        oncePer = "app.status.sync.revision"
+        send    = ["github-${event}-${app}"]
+      }])
+    }
+  ]...)
+
+  notifications_helm_values = {
+    argocdUrl = var.external_url
+    notifiers = {
+      "service.github" = <<-EOT
+        appID: ${var.github_app_id}
+        installationID: ${var.github_app_installation_id}
+        privateKey: $github-privateKey
+      EOT
+    }
+    secret = {
+      items = {
+        "github-privateKey" = local.github_notifications_enabled ? sensitive(file(abspath(var.github_app_private_key_file))) : ""
+      }
+    }
+    templates = local.github_notification_templates
+    triggers  = local.github_notification_triggers
+    # Apps are selected by the ecksd.ee/app label (set by the apps ApplicationSet).
+    subscriptions = [
+      for app, d in var.github_deployments : {
+        recipients = ["github"]
+        triggers   = [for event in keys(local.github_deployment_events) : "on-github-${event}-${app}"]
+        selector   = "ecksd.ee/app=${app}"
+      }
+    ]
+  }
+
   argocd_helm_values = merge(
     {
       crds = {
@@ -190,7 +285,8 @@ SCRIPT
         volumes         = local.repo_server_volumes
       }
     },
-    local.dex_authentik_enabled ? { dex = local.dex_helm_values } : {}
+    local.dex_authentik_enabled ? { dex = local.dex_helm_values } : {},
+    local.github_notifications_enabled ? { notifications = local.notifications_helm_values } : {}
   )
 }
 
