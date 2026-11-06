@@ -32,6 +32,9 @@ resource "helm_release" "intel_device_plugins_operator" {
   ]
 
   depends_on = [kubernetes_namespace_v1.intel_device_plugins]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }
 
 resource "helm_release" "intel_device_plugins_gpu" {
@@ -57,4 +60,7 @@ resource "helm_release" "intel_device_plugins_gpu" {
     helm_release.intel_device_plugins_operator,
     helm_release.node_feature_discovery,
   ]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

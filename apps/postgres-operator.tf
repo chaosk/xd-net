@@ -27,4 +27,7 @@ resource "helm_release" "cloudnative_pg" {
   ]
 
   depends_on = [kubernetes_namespace_v1.cnpg_system]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

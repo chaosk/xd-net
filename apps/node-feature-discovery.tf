@@ -37,4 +37,7 @@ resource "helm_release" "node_feature_discovery" {
   ]
 
   depends_on = [kubernetes_namespace_v1.node_feature_discovery]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

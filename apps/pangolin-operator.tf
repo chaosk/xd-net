@@ -51,4 +51,7 @@ resource "helm_release" "pangolin_operator" {
   ]
 
   depends_on = [kubernetes_namespace_v1.pangolin_operator]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

@@ -39,5 +39,8 @@ resource "helm_release" "cert_manager_webhook_vercel" {
   ]
 
   depends_on = [helm_release.certmanager]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }
 

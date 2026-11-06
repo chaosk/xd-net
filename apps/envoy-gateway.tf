@@ -34,6 +34,9 @@ resource "helm_release" "envoy_gateway" {
   ]
 
   depends_on = [cilium.cilium]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }
 
 # Dataplane resources for the shared Gateway (replaces per-node cilium-envoy).

@@ -55,4 +55,7 @@ resource "helm_release" "synology_csi" {
   ]
 
   depends_on = [kubernetes_secret_v1.synology_creds]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

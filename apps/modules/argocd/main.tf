@@ -329,4 +329,7 @@ resource "helm_release" "argocd" {
     kubernetes_namespace_v1.argocd,
     kubernetes_secret_v1.sops_age,
   ]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

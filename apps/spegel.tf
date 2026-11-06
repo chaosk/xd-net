@@ -48,4 +48,7 @@ resource "helm_release" "spegel" {
   ]
 
   depends_on = [kubernetes_namespace_v1.spegel]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

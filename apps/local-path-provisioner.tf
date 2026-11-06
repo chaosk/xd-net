@@ -46,4 +46,7 @@ resource "helm_release" "local_path_provisioner" {
   ]
 
   depends_on = [kubernetes_namespace_v1.local_path_storage]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

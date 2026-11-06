@@ -38,4 +38,7 @@ resource "helm_release" "certmanager" {
       extraArgs = local.cert_manager_dns01_extra_args
     })
   ]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }

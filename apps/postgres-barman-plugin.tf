@@ -27,4 +27,7 @@ resource "helm_release" "plugin_barman_cloud" {
     helm_release.cloudnative_pg,
     helm_release.certmanager,
   ]
+
+  # Keep only the last 3 release revisions (Helm stores each as a Secret).
+  max_history = 3
 }
