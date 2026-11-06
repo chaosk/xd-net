@@ -6,8 +6,8 @@ variable "namespace" {
 
 variable "chart_version" {
   type        = string
-  description = "argo-helm chart version (argo-cd). 10.11.6 ships Argo CD v3.5.6."
-  default     = "10.11.6"
+  description = "argo-helm chart version (argo-cd). 10.14.0 ships Argo CD v3.6.1."
+  default     = "10.14.0"
 }
 
 variable "external_url" {
