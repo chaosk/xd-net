@@ -85,6 +85,13 @@ sudo ufw allow 51820/udp
 sudo ufw allow 21820/udp
 sudo ufw --force enable
 
+# Pangolin prints a setup token only on a fresh install (before the first admin exists).
+# Once its database exists, skip the wait so re-runs (e.g. upgrades) succeed.
+if sudo find "$${INSTALL_DIR}/config/db" -type f -size +0 2>/dev/null | grep -q .; then
+  echo 'pangolin already initialized; no setup token to wait for'
+  exit 0
+fi
+
 for ((i = 1; i <= 60; i++)); do
   TOKEN="$(sudo docker logs pangolin 2>&1 | sed -n 's/^Token: //p' | tail -1)"
   if [[ -n "$${TOKEN}" ]]; then

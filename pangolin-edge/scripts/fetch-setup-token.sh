@@ -21,6 +21,13 @@ remote_read() {
   ssh "${ssh_opts[@]}" "${SSH_USER}@${SSH_HOST}" "$@"
 }
 
+# An initialized Pangolin has no setup token (vm-install.sh skips it); don't fail re-runs over it.
+if ! remote_read "sudo test -s '${REMOTE_PATH}/.setup-token'" &&
+  remote_read "sudo find '${REMOTE_PATH}/config/db' -type f -size +0 2>/dev/null | grep -q ."; then
+  echo "pangolin already initialized; no setup token to fetch" >&2
+  exit 0
+fi
+
 for attempt in $(seq 1 36); do
   if token="$(remote_read "sudo cat '${REMOTE_PATH}/.setup-token' 2>/dev/null" | tr -d '\r\n')" && [[ -n "${token}" ]]; then
     printf '%s' "${token}" >"${OUT_FILE}"
