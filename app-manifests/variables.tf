@@ -31,7 +31,7 @@ variable "cert_manager_release" {
 variable "prometheus_operator_release" {
   type        = string
   description = "Prometheus Operator release tag for stripped-down CRDs (ServiceMonitor, PodMonitor, etc.)."
-  default     = "v0.94.2"
+  default     = "v0.95.1"
 }
 
 variable "argocd_release" {
