@@ -173,13 +173,13 @@ variable "enable_crowdsec" {
 variable "crowdsec_image_tag" {
   type        = string
   description = "CrowdSec Docker image tag."
-  default     = "v1.8.1-debian"
+  default     = "v1.8.2-debian"
 }
 
 variable "traefik_crowdsec_bouncer_version" {
   type        = string
   description = "Traefik CrowdSec bouncer plugin version (github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin)."
-  default     = "v1.7.1"
+  default     = "v1.8.1"
 }
 
 variable "install_pangolin_via_ssh" {
