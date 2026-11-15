@@ -155,7 +155,7 @@ variable "gerbil_image_tag" {
 variable "traefik_image_tag" {
   type        = string
   description = "Traefik image tag."
-  default     = "v3.7.17"
+  default     = "v3.7.19"
 }
 
 variable "traefik_badger_version" {
@@ -179,7 +179,7 @@ variable "crowdsec_image_tag" {
 variable "traefik_crowdsec_bouncer_version" {
   type        = string
   description = "Traefik CrowdSec bouncer plugin version (github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin)."
-  default     = "v1.8.1"
+  default     = "v1.8.2"
 }
 
 variable "install_pangolin_via_ssh" {
