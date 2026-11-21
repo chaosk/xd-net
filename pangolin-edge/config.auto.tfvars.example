@@ -28,7 +28,7 @@ letsencrypt_email       = "you@example.com"
 # enable_crowdsec = true
 
 # Image pins (defaults in variables.tf). Do not use ee-latest / latest.
-# pangolin_image_tag = "ee-1.26.0"
+# pangolin_image_tag = "ee-1.27.1"
 # gerbil_image_tag   = "1.6.0"
 
 # install_pangolin_via_ssh = true

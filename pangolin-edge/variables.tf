@@ -143,7 +143,7 @@ variable "generate_deploy_bundle" {
 variable "pangolin_image_tag" {
   type        = string
   description = "fosrl/pangolin image tag. Use ee-<version> (not ee-latest) so deploys stay reproducible."
-  default     = "ee-1.26.0"
+  default     = "ee-1.27.1"
 }
 
 variable "gerbil_image_tag" {
