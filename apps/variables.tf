@@ -219,7 +219,7 @@ variable "gateway_class_name" {
 variable "envoy_gateway_version" {
   type        = string
   description = "Envoy Gateway Helm chart version (gateway-helm + gateway-crds-helm OCI tags). Must match app-manifests/envoy_gateway_release (v1.9.x → Gateway API v1.6.3)."
-  default     = "v1.9.3"
+  default     = "v1.9.4"
 }
 
 variable "envoy_gateway_namespace" {
